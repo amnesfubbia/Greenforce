@@ -296,10 +296,18 @@ html[data-theme="dark"] .btn-primary{color:#062B1A}
 .arabic-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
 .arabic-src{font-size:calc(11px * var(--font-scale));color:var(--text-3)}
 
-/* ---------- Arabic learning size corrections ---------- */
-.arabic-text.large-ar{font-size:calc(34px * var(--font-scale));line-height:2.1}
-.asma-card-ar{font-family:var(--font-ar);font-size:calc(24px * var(--font-scale));line-height:1.7;direction:rtl}
-@media (max-width:420px){.arabic-text{font-size:calc(28px * var(--font-scale))}.iqra-page .iqra-line{font-size:calc(38px * var(--font-scale))}.asma-card-ar{font-size:calc(22px * var(--font-scale))}}
+/* ---------- Huruf Hijaiyah — large dedicated learning UI ---------- */
+.hijaiyah-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+.hijaiyah-card{border:1px solid var(--border);background:var(--surface);border-radius:16px;padding:12px;text-align:center;cursor:pointer}
+.hijaiyah-letter{font-family:var(--font-ar);font-size:72px;line-height:1.35;direction:rtl;color:var(--text);font-weight:600;min-height:104px;display:flex;align-items:center;justify-content:center}
+.hijaiyah-name{font-size:14px;font-weight:700;margin-top:4px}
+.hijaiyah-number{font-size:11px;color:var(--text-3)}
+.hijaiyah-forms{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:10px}
+.hijaiyah-form{border:1px dashed var(--border);border-radius:9px;padding:4px 1px}
+.hijaiyah-form b{display:block;font-family:var(--font-ar);font-size:24px;line-height:1.55;direction:rtl}
+.hijaiyah-form span{font-size:8px;color:var(--text-3)}
+.hijaiyah-detail-ar{font-family:var(--font-ar);font-size:110px;line-height:1.3;text-align:center;direction:rtl;padding:4px 0 14px}
+@media(max-width:700px){.hijaiyah-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.hijaiyah-letter{font-size:64px;min-height:96px}.hijaiyah-form b{font-size:23px}.hijaiyah-detail-ar{font-size:96px}}
 /* ---------- Audio ---------- */
 .audio-box{
   display:flex;align-items:center;gap:10px;
@@ -344,7 +352,7 @@ html[data-theme="dark"] .audio-btn{color:#062B1A}
 .iqra-page{flex:0 0 100%;min-width:100%;padding:26px 18px;min-height:230px;display:flex;flex-direction:column;gap:12px}
 .iqra-page-num{font-size:calc(11px*var(--font-scale));font-weight:800;letter-spacing:.06em;color:var(--text-3);text-transform:uppercase}
 .iqra-ins{font-size:calc(11.5px*var(--font-scale));color:var(--text-2);border-bottom:1px dashed var(--border);padding-bottom:8px;text-align:center}
-.iqra-line{font-family:var(--font-ar);font-size:calc(42px*var(--font-scale));line-height:2;direction:rtl;text-align:center;color:var(--text)}
+.iqra-line{font-family:var(--font-ar);font-size:calc(30px*var(--font-scale));line-height:1.9;direction:rtl;text-align:center;color:var(--text)}
 .iqra-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:10px}
 .iqra-btn{width:36px;height:36px;border-radius:10px;background:var(--surface);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-2)}
 .iqra-btn:hover{color:var(--text);background:var(--surface-2)}
@@ -1534,7 +1542,7 @@ addEntry({
   title:"Juz 'Amma", summary:"Juz 30 — 37 surah pendek, jendela pertama bagi penghafal dan pemula.",
   body:[
     {h:"Isi", p:["Juz 'Amma terdiri dari 37 surah, dari An-Naba' (78) hingga An-Nas (114). Kebanyakan surah pendek dan sering dibaca dalam shalat."]},
-    {h:"Cara belajar", list:["Baca dengan tartil; tombol audio pada halaman surah memutar murottal dan memiliki sumber cadangan otomatis.","Hafal bertahap dengan pengulangan.","Pahami arti tiap ayat.","Evaluasi hafalan dengan setoran kepada guru."]}
+    {h:"Cara belajar", list:["Baca dengan tartil dan dengarkan murottal (audio menyusul).","Hafal bertahap dengan pengulangan.","Pahami arti tiap ayat.","Evaluasi hafalan dengan setoran kepada guru."]}
   ],
   sources:["quran","app"], related:["alquran","iqra-1"], tags:["al-quran","hafalan"]
 });
@@ -1894,7 +1902,7 @@ addEntry({id:"haji", menu:1, material:"haji", type:"article",
     {h:"Pengertian", p:["Haji adalah menyengaja Baitullah (Ka'bah) untuk menunaikan amalan tertentu (ihram, tawaf, sa'i, wukuf, dan lainnya) pada waktu tertentu, dengan syarat-syarat tertentu."]},
     {h:"Hukum", p:["Wajib sekali seumur hidup bagi yang mampu — QS. Ali 'Imran 3:97: \"...wajib bagi manusia (melakukan ibadah) haji ke Baitullah, yaitu bagi yang mampu mengadakan perjalanan ke sana.\""]},
     {h:"Syarat wajib", list:["Islam","Balig","Berakal","Merdeka","Mampu (biaya, keamanan, kesehatan)"]},
-    {h:"Catatan", p:["Rincian rukun, wajib, sunnah, larangan, dan bacaan tersedia pada entri di bawah materi ini. Bacaan Arab menyertakan arti, transliterasi, dan sumber; TTS Arab tersedia sebagai fallback bila rekaman tidak tersedia."]}
+    {h:"Catatan", p:["Rincian rukun, wajib, sunnah, larangan, dan bacaan tersedia pada entri di bawah materi ini. Bacaan Arab menyertakan arti, transliterasi, dan sumber; audio menyusul."]}
   ],
   sources:["quran","fiqihsunnah"], related:["rukun-haji","ihram","tawaf","wukuf","umrah"], tags:["ibadah","haji","rukun islam"]
 });
@@ -2146,7 +2154,7 @@ addEntry({
   title:"Asmaul Husna", summary:"99 nama Allah yang terbaik — setiap nama adalah entri tersendiri di sini.",
   body:[
     {h:"Dalil", p:["\"Allah memiliki Asmaul Husna (nama-nama yang terbaik), maka bermohonlah kepada-Nya dengan menyebutnya.\" (QS. Al-A'raf 7:180). Rasulullah ﷺ bersabda: \"Sesungguhnya Allah memiliki 99 nama — barang siapa menghafalnya, masuk surga.\" (HR. Bukhari no. 2736, Muslim no. 2677)."]},
-    {h:"Catatan", p:["Penjelasan makna disusun ringkas; untuk pendalaman (terutama nama yang memiliki perbedaan pemahaman seperti sifat-sifat Allah), rujuk kitab syarah yang mu'tabar. Audio TTS Arab tersedia; rekaman bermaqam Hijaz memerlukan file berlisensi."]}
+    {h:"Catatan", p:["Penjelasan makna disusun ringkas; untuk pendalaman (terutama nama yang memiliki perbedaan pemahaman seperti sifat-sifat Allah), rujuk kitab syarah yang mu'tabar. Audio setiap nama menyusul."]}
   ],
   sources:["quran","bukhari","muslim"], related:["asma-1","asma-99","asma-wa-sifat"], tags:["asmaul husna","akidah"]
 });
@@ -4515,10 +4523,6 @@ DB.IQRA_PAGES = {
     words:W6, ins:"Bacaan lancar: surah pendek dan kalimat Al-Qur'an dengan tartil. Setelah ini siap membaca mushaf."})
 };
 
-/* DATABASE COMPLETION — HURUF HIJAIYAH */
-const HIJAIYAH_DETAIL=[["alif","ا","Alif","Rongga mulut (al-jauf)"],["ba","ب","Ba","Dua bibir"],["ta","ت","Ta","Ujung lidah"],["tsa","ث","Tsa","Ujung lidah"],["jim","ج","Jim","Tengah lidah"],["ha","ح","Ha","Tengah tenggorokan"],["kha","خ","Kha","Atas tenggorokan"],["dal","د","Dal","Ujung lidah"],["dzal","ذ","Dzal","Ujung lidah"],["ra","ر","Ra","Ujung lidah"],["zai","ز","Zai","Ujung lidah"],["sin","س","Sin","Ujung lidah"],["syin","ش","Syin","Tengah lidah"],["shad","ص","Shad","Ujung lidah"],["dhad","ض","Dhad","Sisi lidah"],["tha","ط","Tha","Ujung lidah"],["zha","ظ","Zha","Ujung lidah"],["ain","ع","'Ain","Tengah tenggorokan"],["ghain","غ","Ghain","Atas tenggorokan"],["fa","ف","Fa","Bibir bawah + gigi atas"],["qaf","ق","Qaf","Pangkal lidah"],["kaf","ك","Kaf","Pangkal lidah"],["lam","ل","Lam","Ujung lidah"],["mim","م","Mim","Dua bibir"],["nun","ن","Nun","Ujung lidah"],["wau","و","Wau","Dua bibir"],["ha-akhir","ه","Ha","Pangkal tenggorokan"],["ya","ي","Ya","Tengah lidah"]];
-HIJAIYAH_DETAIL.forEach(x=>{const id="huruf-"+x[0];if(!getEntry(id))addEntry({id,menu:12,material:"bahasa-arab-dasar",sub:"huruf",type:"letter",title:x[2],summary:"Huruf hijaiyah "+x[2]+" ("+x[1]+").",arabic:{text:x[1],translit:x[2],arti:"Huruf hijaiyah",audio:"",audio_src:"",source:"Materi pembelajaran aplikasi"},body:[{h:"Makhraj",p:[x[3]]},{h:"Latihan",list:[x[1]+"َ",x[1]+"ِ",x[1]+"ُ",x[1]+"ْ"]}],sources:["app"],related:["huruf-hijaiyah","iqra-1","makharijul-huruf"],tags:["huruf hijaiyah","bahasa arab","iqra"],status:"needs-review"});});
-DB.ENTRIES.forEach(e=>{e.tags=e.tags||[];e.related=e.related||[];if(e.arabic&&e.arabic.text)e.audioMode=e.audioMode||"tts-fallback";});
 /* Sinkronkan tiap baris: (sudah berupa string utuh; sisipkan instruksi per halaman) */
 })();
 </script>
@@ -4917,9 +4921,8 @@ const QURAN_OFFSET = (function(){
   return off;
 })();
 API.globalAyah = (surah, ayah) => QURAN_OFFSET[surah] + ayah;
-API.ayahAudioUrls = (surah, ayah) => { const n=API.globalAyah(surah, ayah); return ["https://cdn.islamic.network/quran/audio/128/ar.alafasy-2/"+n+".mp3","https://cdn.islamic.network/quran/audio/128/ar.alafasy/"+n+".mp3","https://cdn.islamic.network/quran/audio/64/ar.alafasy/"+n+".mp3"]; };
-API.ayahAudioUrl = (surah, ayah) => API.ayahAudioUrls(surah, ayah)[0];
-API.surahAudioUrls = surah => ["https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/"+surah+".mp3","https://cdn.islamic.network/quran/audio-surah/64/ar.alafasy/"+surah+".mp3"];
+API.ayahAudioUrl = (surah, ayah) =>
+  "https://cdn.islamic.network/quran/audio/128/ar.alafasy/"+API.globalAyah(surah, ayah)+".mp3";
 
 API.getSurah = async function(n){
   // cache per surah (ttl 30 hari)
@@ -5291,7 +5294,7 @@ function surahView(n){
     let rendered = 0;
     window._surahQueue = window._surahQueue || {};
     window._surahKeys = window._surahKeys || {};
-    window._surahQueue[n] = ayahs.map(a=>API.ayahAudioUrls(n, a.number));
+    window._surahQueue[n] = ayahs.map(a=>API.ayahAudioUrl(n, a.number));
     window._surahKeys[n] = ayahs.map(a=>a.key || (n+":"+a.number));
     box.innerHTML = '<div class="section-title"><h2>Ayat ('+ayahs.length+')</h2></div>'
       + '<p class="tiny muted" style="margin-bottom:8px">Sumber: '+esc(res.source)+' · tombol speaker memutar ayat; speaker di nama surah memutar seluruh surah berurutan</p>'
@@ -5318,10 +5321,10 @@ function surahView(n){
 function ayatCard(s, a){
   const aid = "ayat-"+(a.key||(s[0]+":"+a.number));
   const saved = inCollection(aid);
-  const urls = a.arab ? API.ayahAudioUrls(s[0], a.number) : []; const url = urls[0]||null;
+  const url = a.arab ? API.ayahAudioUrl(s[0], a.number) : null;
   return '<div class="card ayat-card" data-ayah="'+(a.key||(s[0]+":"+a.number))+'" style="margin-top:10px">'
     + '<div class="ayat-head">'
-    + (url ? '<button class="q-speaker" data-audio-key="'+aid+'" data-audio-url="'+url+'" data-audio-fallback="'+esc(JSON.stringify(urls.slice(1)))+'" aria-label="Putar ayat '+a.number+'" title="Putar ayat">'+icon("play",15)+'</button>' : '<span class="q-speaker-muted" title="Audio tidak tersedia">'+icon("audio",15)+'</span>')
+    + (url ? '<button class="q-speaker" data-audio-key="'+aid+'" data-audio-url="'+url+'" aria-label="Putar ayat '+a.number+'" title="Putar ayat">'+icon("play",15)+'</button>' : '<span class="q-speaker-muted" title="Audio tidak tersedia">'+icon("audio",15)+'</span>')
     + '<span class="ayat-num">'+a.number+'</span>'
     + '</div>'
     + '<div class="arabic-text" dir="rtl" lang="ar">'+esc(a.arab)+'</div>'
@@ -5369,7 +5372,7 @@ function iqraView(level){
   let h = '<div class="page">'+crumbs([{label:"Home",href:"#/home"},{label:"Al-Qur'an",href:"#/quran"},{label:"Iqra",href:"#/quran/iqra"},{label:e.title}])
     + '<button class="btn btn-ghost" style="margin-bottom:10px" data-action="back" data-fallback="#/quran/iqra">'+icon("back",15)+' Kembali ke Iqra</button>'
     + '<h1 class="h1">'+esc(e.title)+'</h1>'
-    + '<p class="muted small" style="margin-top:4px">Mode halaman per jilid: materi orisinal aplikasi yang mengikuti progresi belajar Iqra secara bertahap, bukan salinan halaman buku cetak. Gunakan tombol halaman atau titik navigasi. Belajar terbaik tetap bersama guru (talaqqi).</p>'
+    + '<p class="muted small" style="margin-top:4px">Geser halaman seperti membaca buku Iqra. Materi orisinal aplikasi — belajar terbaik tetap bersama guru (talaqqi).</p>'
     + '<div class="iqra-book" id="iqra-book">'
     + '<div class="iqra-viewport"><div class="iqra-track">';
   pages.forEach((pg,i)=>{
@@ -5735,12 +5738,11 @@ function asmaulView(){
   let h = '<div class="page">'+crumbs([{label:"Home",href:"#/home"},{label:"Rukun Iman",href:"#/menu/2"},{label:"Asmaul Husna"}])
     + '<h1 class="h1">Asmaul Husna</h1>'
     + '<p class="muted" style="margin-top:4px">99 nama Allah — setiap nama adalah entri tersendiri dengan Arab, makna, dalil, dan suara.</p>'
-    + '<div class="chips" style="margin:10px 0"><button class="chip active" data-action="asmaul-tts">'+icon("audio",14)+' Putar semua (TTS Arab)</button><button class="chip" data-action="asmaul-hijaz">Mode Hijaz*</button></div>'
-    + '<div class="callout info" style="margin-bottom:12px"><b>Audio:</b> TTS Arab tersedia. Mode Hijaz membutuhkan rekaman bermaqam Hijaz berlisensi; TTS tidak dapat menjamin maqam Hijaz.</div>'
+    + '<div class="chips" style="margin:10px 0"><button class="chip active" data-action="asmaul-tts">'+icon("audio",14)+' Putar semua nama (suara perangkat)</button></div>'
     + '<div class="card-grid">';
   list.forEach(e=>{
     h += '<div class="card menu-card tappable" data-nav="#/entry/'+e.id+'">'
-      + '<div class="mc-top"><span class="menu-icon" style="background:var(--accent-soft)"><span dir="rtl" lang="ar" class="asma-card-ar">'+esc(e.arabic.text)+'</span></span><span class="mc-count">#'+e.id.split("-")[1]+'</span></div>'
+      + '<div class="mc-top"><span class="menu-icon" style="background:var(--accent-soft)"><span dir="rtl" lang="ar" style="font-family:var(--font-ar);font-size:17px">'+esc(e.arabic.text)+'</span></span><span class="mc-count">#'+e.id.split("-")[1]+'</span></div>'
       + '<h3>'+esc(e.title)+'</h3><p>'+esc(e.arabic.arti)+'</p></div>';
   });
   h += '</div></div>';
@@ -5863,20 +5865,12 @@ const AM = {
   _ensure(){
     if(this.el || typeof Audio==="undefined") return this.el;
     this.el = new Audio();
-    this.el.preload = "auto";
     const self = this;
     this.el.onended = ()=> self.next();
-    this.el.onerror = ()=> self._fallback();
     return this.el;
   },
-  _fallback(){
-    const a=this.el, list=a && a._fallbackUrls || [], i=a && a._fallbackIndex || 0;
-    if(a && i+1<list.length){ a._fallbackIndex=i+1; a.src=list[i+1]; a.play().catch(()=>this._fallback()); return; }
-    if(this.queue.length){ this.next(); return; }
-    this.key=null; this._sync(); toast("Audio gagal diputar. Coba lagi atau gunakan TTS Arab.", true);
-  },
   stop(){
-    if(this.el){ this.el.pause(); this.el.src = ""; this.el._fallbackUrls=[]; this.el._fallbackIndex=0; }
+    if(this.el){ this.el.pause(); this.el.src = ""; }
     this.key = null; this.queue = []; this.qi = 0;
     this._sync();
   },
@@ -5893,10 +5887,9 @@ const AM = {
   playOne(url, key){
     const a = this._ensure(); if(!a) return;
     this.stop();
-    const urls = Array.isArray(url) ? url : [url];
-    a._fallbackUrls=urls.filter(Boolean); a._fallbackIndex=0; a.src=a._fallbackUrls[0]||""; this.key=key;
+    a.src = url; this.key = key;
     this._scrollAyah(key);
-    a.play().catch(()=>this._fallback());
+    a.play().catch(()=>{ this.key=null; this._sync(); });
     this._sync();
   },
   toggleOne(url, key){
@@ -5913,12 +5906,10 @@ const AM = {
   _playQ(){
     if(this.qi >= this.queue.length){ this.key=null; this.queue=[]; this.keys=[]; this._sync(); return; }
     const a = this._ensure(); if(!a) return;
-    const item=this.queue[this.qi];
-    const urls=Array.isArray(item)?item:[item];
-    a._fallbackUrls=urls.filter(Boolean); a._fallbackIndex=0; a.src=a._fallbackUrls[0]||"";
+    a.src = this.queue[this.qi];
     if(this.keys && this.keys[this.qi]) this._scrollAyah(this.keys[this.qi]);
     this.qi++;
-    a.play().catch(()=> this._fallback());
+    a.play().catch(()=> this.next());
     this._sync();
   },
   next(){
@@ -5988,18 +5979,20 @@ function arabicBlock(a){
   if(a.translit) h += '<div class="arabic-translit">'+esc(a.translit)+'</div>';
   if(a.arti) h += '<div class="arabic-translation">'+esc(a.arti)+'</div>';
   const ttsBtn = (a.text && typeof window!=="undefined" && "speechSynthesis" in window)
-    ? '<button class="q-speaker" data-tts="'+esc(a.text)+'" aria-label="Dengarkan" title="Dengarkan (TTS Arab perangkat)">'+icon("audio",15)+'</button>' : "";
+    ? '<button class="q-speaker" data-tts="'+esc(a.text)+'" aria-label="Dengarkan" title="Dengarkan (suara perangkat)">'+icon("audio",15)+'</button>' : "";
   h += '<div class="arabic-meta">'+ttsBtn+audioUI(a.audio, a.audio_src, "Audio bacaan Arab")+'</div>';
   if(a.source) h += '<div class="arabic-src">Sumber: '+esc(a.source)+'</div>';
   return h + '</div>';
 }
 function audioUI(url, src, label){
-  if(!url) return "";
-  return '<div class="audio-box" data-audio="'+esc(url)+'">'
-    +'<button class="audio-btn" data-action="play" aria-label="Putar audio">'+icon("play")+'</button>'
-    +'<div class="audio-info"><div class="audio-title">'+esc(label||"Audio")+'</div>'
-    +'<div class="audio-progress"><i></i></div>'
-    +'<div class="audio-src">'+(src?esc(src):"Audio rekaman")+'</div></div></div>';
+  if(url){
+    return '<div class="audio-box" data-audio="'+esc(url)+'">'
+      +'<button class="audio-btn" data-action="play" aria-label="Putar audio">'+icon("play")+'</button>'
+      +'<div class="audio-info"><div class="audio-title">'+esc(label||"Audio")+'</div>'
+      +'<div class="audio-progress"><i></i></div>'
+      +'<div class="audio-src">'+(src?esc(src):"")+'</div></div></div>';
+  }
+  return '<div class="audio-unavail">'+icon("audio",16)+'<span>Audio belum tersedia — konten audio memerlukan sumber berlisensi.</span></div>';
 }
 
 /* ---------- Breadcrumb ---------- */
@@ -6035,6 +6028,8 @@ function sourcesBlock(e){
 
 /* ---------- Template Detail Entri Universal ---------- */
 function entryView(id){
+  if(id==="huruf-hijaiyah") return hijaiyahView();
+  if(/^huruf-/.test(id)) return hijaiyahView(id);
   const e = getEntry(id);
   if(!e) return errorView("Entri tidak ditemukan.");
   addRecent(e.id);
@@ -6445,7 +6440,7 @@ function tentangView(){
     + '<div class="section-title"><h2>Laporan Database</h2></div>'
     + '<div class="card"><div class="calc-breakdown">'
     + '<div class="cb-row"><span>Total entri</span><b>'+total+'</b></div>'
-    + '<div class="cb-row"><span>Menu utama</span><b>'+DB.MENUS.length+'</b></div>'
+    + '<div class="cb-row"><span>Menu utama</span><b>14</b></div>'
     + '<div class="cb-row"><span>Materi</span><b>'+DB.MENUS.reduce((a,m)=>a+m.materials.length,0)+'</b></div>'
     + '<div class="cb-row"><span>Entri bersubmateri</span><b>'+subs+'</b></div>'
     + '<div class="cb-row"><span>Asmaul Husna</span><b>'+DB.ENTRIES.filter(e=>e.type==="asmaul").length+'</b></div>'
@@ -8579,6 +8574,24 @@ patch("shalat-jenazah", e=>{
   };
 });
 
+/* ========== HURUF HIJAIYAH — 28 HURUF LENGKAP ========== */
+const HIJAIYAH_DETAIL=[
+["alif","ا","Alif","Rongga mulut",["ا","ـا","ـا","ا"]],["ba","ب","Ba","Dua bibir",["ب","بـ","ـبـ","ـب"]],["ta","ت","Ta","Ujung lidah",["ت","تـ","ـتـ","ـت"]],["tsa","ث","Tsa","Ujung lidah + ujung gigi",["ث","ثـ","ـثـ","ـث"]],["jim","ج","Jim","Tengah lidah",["ج","جـ","ـجـ","ـج"]],["ha","ح","Ha","Tengah tenggorokan",["ح","حـ","ـحـ","ـح"]],["kha","خ","Kha","Atas tenggorokan",["خ","خـ","ـخـ","ـخ"]],["dal","د","Dal","Ujung lidah",["د","ـد","ـد","د"]],["dzal","ذ","Dzal","Ujung lidah + ujung gigi",["ذ","ـذ","ـذ","ذ"]],["ra","ر","Ra","Ujung lidah",["ر","ـر","ـر","ر"]],["zai","ز","Zai","Ujung lidah",["ز","ـز","ـز","ز"]],["sin","س","Sin","Ujung lidah",["س","سـ","ـسـ","ـس"]],["syin","ش","Syin","Tengah lidah",["ش","شـ","ـشـ","ـش"]],["shad","ص","Shad","Ujung lidah",["ص","صـ","ـصـ","ـص"]],["dhad","ض","Dhad","Sisi lidah",["ض","ضـ","ـضـ","ـض"]],["tha","ط","Tha","Ujung lidah",["ط","طـ","ـطـ","ـط"]],["zha","ظ","Zha","Ujung lidah + ujung gigi",["ظ","ظـ","ـظـ","ـظ"]],["ain","ع","'Ain","Tengah tenggorokan",["ع","عـ","ـعـ","ـع"]],["ghain","غ","Ghain","Atas tenggorokan",["غ","غـ","ـغـ","ـغ"]],["fa","ف","Fa","Bibir bawah + gigi atas",["ف","فـ","ـفـ","ـف"]],["qaf","ق","Qaf","Pangkal lidah",["ق","قـ","ـقـ","ـق"]],["kaf","ك","Kaf","Pangkal lidah",["ك","كـ","ـكـ","ـك"]],["lam","ل","Lam","Ujung lidah",["ل","لـ","ـلـ","ـل"]],["mim","م","Mim","Dua bibir",["م","مـ","ـمـ","ـم"]],["nun","ن","Nun","Ujung lidah",["ن","نـ","ـنـ","ـن"]],["wau","و","Wau","Dua bibir",["و","ـو","ـو","و"]],["ha-akhir","ه","Ha","Pangkal tenggorokan",["ه","هـ","ـهـ","ـه"]],["ya","ي","Ya","Tengah lidah",["ي","يـ","ـيـ","ـي"]]
+];
+HIJAIYAH_DETAIL.forEach((x)=>{const id="huruf-"+x[0];if(!getEntry(id))addEntry({id,menu:12,material:"bahasa-arab-dasar",sub:"huruf",type:"letter",title:x[2],summary:"Huruf hijaiyah "+x[2]+" ("+x[1]+").",arabic:{text:x[1],translit:x[2],arti:"Huruf hijaiyah",audio:"",audio_src:"",source:"Materi pembelajaran aplikasi"},body:[{h:"Makhraj",p:[x[3]]},{h:"Bentuk huruf",list:["Terpisah: "+x[4][0],"Awal: "+x[4][1],"Tengah: "+x[4][2],"Akhir: "+x[4][3]]},{h:"Latihan harakat",list:[x[1]+"َ",x[1]+"ِ",x[1]+"ُ",x[1]+"ْ"]}],sources:["app"],related:["huruf-hijaiyah","iqra-1","makharijul-huruf-arab"],tags:["huruf hijaiyah","bahasa arab","iqra"],status:"needs-review"});});
+function hijaiyahView(id){
+  if(id){
+    const x=HIJAIYAH_DETAIL.find(v=>"huruf-"+v[0]===id), e=getEntry(id);
+    if(!x||!e)return errorView("Huruf tidak ditemukan.");
+    let h='<div class="page">'+crumbs([{label:"Home",href:"#/home"},{label:"Bahasa Arab",href:"#/entry/bahasa-arab"},{label:"Huruf Hijaiyah",href:"#/entry/huruf-hijaiyah"},{label:e.title}])+'<button class="btn btn-ghost" style="margin-bottom:10px" data-action="back" data-fallback="#/entry/huruf-hijaiyah">'+icon("back",15)+' Kembali</button><h1 class="h1">'+esc(e.title)+'</h1><div class="card"><div class="hijaiyah-detail-ar" dir="rtl" lang="ar">'+esc(x[1])+'</div><div class="hijaiyah-forms">';
+    ["Terpisah","Awal","Tengah","Akhir"].forEach((n,i)=>h+='<div class="hijaiyah-form"><b dir="rtl" lang="ar">'+esc(x[4][i])+'</b><span>'+n+'</span></div>');
+    h+='</div><div class="section-title"><h2>Latihan harakat</h2></div><div class="arabic-text" style="font-size:calc(46px * var(--font-scale));line-height:2.1;text-align:center" dir="rtl" lang="ar">'+x[1]+'َ &nbsp; '+x[1]+'ِ &nbsp; '+x[1]+'ُ &nbsp; '+x[1]+'ْ</div><div class="callout info">'+icon("info",18)+'<div><b>Makhraj:</b> '+esc(x[3])+'<br>Latihan pelafalan sebaiknya dikoreksi guru secara langsung (talaqqi).</div></div></div></div>';return h;
+  }
+  let h='<div class="page">'+crumbs([{label:"Home",href:"#/home"},{label:"Bahasa Arab",href:"#/entry/bahasa-arab"},{label:"Huruf Hijaiyah"}])+'<h1 class="h1">Huruf Hijaiyah</h1><p class="muted">28 huruf dasar — sekarang ditampilkan besar, lengkap, dan satu per satu dengan bentuk terpisah, awal, tengah, akhir, makhraj, serta latihan harakat.</p><div class="hijaiyah-grid">';
+  HIJAIYAH_DETAIL.forEach((x,i)=>{h+='<div class="hijaiyah-card" data-nav="#/entry/huruf-'+x[0]+'"><div class="hijaiyah-number">'+(i+1)+' / 28</div><div class="hijaiyah-letter" dir="rtl" lang="ar">'+esc(x[1])+'</div><div class="hijaiyah-name">'+esc(x[2])+'</div><div class="hijaiyah-forms">'+x[4].map((f,j)=>'<div class="hijaiyah-form"><b dir="rtl" lang="ar">'+esc(f)+'</b><span>'+["T","A","M","K"][j]+'</span></div>').join('')+'</div></div>';});
+  return h+'</div><div class="callout info" style="margin-top:14px">'+icon("info",18)+'<div><b>Catatan:</b> ا د ذ ر ز و tidak menyambung ke huruf sesudahnya. Hamzah (ء) dibahas sebagai materi tambahan karena bentuknya dapat berubah menurut posisi dan harakat.</div></div></div>';
+}
+
 function parseRoute(){
   const raw = (location.hash||"#/home").replace(/^#\/?/,"");
   const parts = raw.split("/");
@@ -8695,13 +8708,15 @@ function bindActions(){
         const names = DB.ENTRIES.filter(e=>e.type==="asmaul").map(e=>e.arabic ? e.arabic.text : "").filter(Boolean);
         AM.tts(names.join("، "), el);
       }
-      else if(act==="asmaul-hijaz"){ toast("Mode Hijaz membutuhkan rekaman bermaqam Hijaz berlisensi; TTS tidak dapat menjamin maqam.", true); }
       else if(act==="surah-audio"){
         const n = el.dataset.surah;
         const key = "surah-"+n;
         if(AM.key===key && AM.el && !AM.el.paused){ AM.el.pause(); AM._sync(); return; }
         if(AM.key===key && AM.el){ AM.el.play().catch(()=>{}); AM._sync(); return; }
-        AM.playOne(API.surahAudioUrls(+n), key);
+        const q = window._surahQueue && window._surahQueue[n];
+        const k = window._surahKeys && window._surahKeys[n];
+        if(q && q.length){ AM.playQueue(q, key, k); }
+        else { toast("Audio surah belum termuat — buka surah terlebih dahulu"); }
       }
       else if(act==="car-prev"||act==="car-next"){ const c=$("today-carousel"); if(c&&c._go){ clearInterval(window._carTimer); c._go(carIdx+(act==="car-next"?1:-1)); window._carTimer=setInterval(()=>{ const cc=$("today-carousel"); if(cc&&cc._go)cc._go(carIdx+1); },6000); } }
       else if(act==="car-dot"){ const c=$("today-carousel"); if(c&&c._go){ clearInterval(window._carTimer); c._go(+el.dataset.i); window._carTimer=setInterval(()=>{ const cc=$("today-carousel"); if(cc&&cc._go)cc._go(carIdx+1); },6000); } }
@@ -8760,11 +8775,12 @@ function resetLocal(){
 /* ---------- Audio ---------- */
 let audioEl=null, audioBtn=null;
 function toggleAudio(btn){
-  const url=btn.dataset.audioUrl||btn.closest("[data-audio]")?.dataset.audio||"";
-  let fb=[];try{fb=JSON.parse(btn.dataset.audioFallback||"[]")}catch(e){}
-  const key=btn.dataset.audioKey||("audio-"+Date.now());
-  if(!url){toast("Audio tidak memiliki sumber valid.",true);return;}
-  AM.toggleOne([url].concat(fb),key);
+  const url = btn.closest("[data-audio]") ? btn.closest("[data-audio]").dataset.audio : null;
+  if(!url) return;
+  if(!audioEl){ audioEl = new Audio(); audioEl.onended = ()=>{ if(audioBtn){audioBtn.innerHTML=icon("play"); audioBtn.closest(".audio-box").querySelector(".audio-progress > i").style.width="0";} }; audioEl.ontimeupdate = ()=>{ const p=btn?btn.closest(".audio-box"):null; if(p) p.querySelector(".audio-progress > i").style.width = (audioEl.currentTime/audioEl.duration*100)+"%"; }; }
+  if(audioEl.src!==url){ audioEl.src=url; }
+  if(audioEl.paused){ audioEl.play(); btn.innerHTML=icon("pause"); audioBtn=btn; }
+  else { audioEl.pause(); btn.innerHTML=icon("play"); }
 }
 function afterRender(r){
   if(r.name==="home"){
