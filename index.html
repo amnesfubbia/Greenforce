@@ -134,7 +134,7 @@
         .genre-explore-chip {
             padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
             background: #1a1a1a; border: 1px solid #2a2a2a; color: #666;
-            cursor: pointer; white-space: nowrap; transition: all 0.15s;
+            cursor: pointer; white-space: nowrap; transition: all 0.15s; flex-shrink: 0;
             -webkit-tap-highlight-color: transparent;
         }
         .genre-explore-chip.active { background: #fff; color: #000; border-color: #fff; }
@@ -1286,7 +1286,7 @@
         /* ===== REEL DETAIL BOTTOM SHEET ===== */
         #reelDetailSheet {
             display: none;
-            position: fixed; bottom: 0; left: 0; right: 0;
+            position: fixed; bottom: 52px; left: 0; right: 0;
             z-index: 9800;
             background: #141414;
             border-radius: 20px 20px 0 0;
@@ -2354,7 +2354,7 @@
                 </div>
             </div>
             <!-- Genre chips row (shown only on Genres tab) -->
-            <div id="genreChipsRow" style="display:none;flex-wrap:wrap;gap:8px;padding:14px 16px 10px"></div>
+            <div id="genreChipsRow" class="no-scrollbar" style="display:none;flex-wrap:nowrap;align-items:center;gap:8px;padding:10px 16px;position:fixed;left:0;right:0;bottom:52px;z-index:4600;background:#000;border-top:1px solid #1c1c1c;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;touch-action:pan-x;scrollbar-width:none"></div>
             <!-- Landscape grid: 2 columns -->
             <div id="exploreGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 16px"></div>
         </div>
@@ -3936,81 +3936,87 @@
         let _musicYtGotSignal = false; // sudah dapat sinyal valid dari player?
         let _musicLastDur = 0;         // durasi lagu penuh terakhir (untuk seek)
         let _dmCurTime = 0;            // posisi waktu terakhir dari event player
-        let _musicFrameWin = null;     // contentWindow iframe YouTube (penanda pemutar penuh aktif)
+        let _musicFrameWin = null;     // contentWindow iframe YouTube
 
-        // ===== LAGU PENUH via YouTube =====
-        // Video dicari lewat YouTube Data API v3 (resmi) lalu diputar dengan YouTube IFrame Player.
-        // CARA MENDAPATKAN API KEY (gratis, cukup sekali):
-        //  1. Buka console.cloud.google.com → buat project → APIs & Services → Library → aktifkan "YouTube Data API v3"
-        //  2. Credentials → Create credentials → API key
-        //  3. (Disarankan) Edit key: Application restrictions = Websites → https://amnesfubbia.github.io/* ;
-        //     API restrictions = YouTube Data API v3
-        //  4. Tempel key di konstanta di bawah.
-        // Kuota gratis 10.000 unit/hari ≈ 100 pencarian lagu baru per hari; lagu yang pernah dicari disimpan
-        // di perangkat sehingga tidak memakai kuota lagi.
-        const YT_API_KEY = 'AIzaSyDJ7sM0LO75TaLTYhsrfwjqT5PkKeq7v5w';
-        let _musicYtPlayer = null;                // objek YT.Player
-        let _musicYtReq = 0;                      // penanda permintaan terbaru (abaikan hasil lama kalau lagu cepat diganti)
-        let _musicYtCands = [], _musicYtCandIdx = 0;
-        let _ytNoKeyWarned = false;
-        let _musicYtErr = '';                     // '' | 'quota' | 'key' | 'network'
-        const MUSIC_YT_CACHE_KEY = 'musicYtIds';
-        function _musicYtCacheGet(q) {
-            try { const m = JSON.parse(localStorage.getItem(MUSIC_YT_CACHE_KEY) || '{}'); return Array.isArray(m[q]) ? m[q] : null; }
-            catch (e) { _warn('_musicYtCacheGet', e); return null; }
+        // Cari lagu penuh di YouTube (YouTube Data API v3)
+        // Catatan: key ini terlihat di source HTML. Sebaiknya dibatasi di Google Cloud Console
+        // (API restriction: YouTube Data API v3 saja) supaya tidak bisa dipakai orang lain.
+        const YOUTUBE_API_KEY = 'AIzaSyDJ7sM0LO75TaLTYhsrfwjqT5PkKeq7v5w';
+        let _musicYtErr = '';  // penyebab gagal terakhir ('' = hanya tidak ada hasil)
+        const _musicYtNorm = s => String(s || '').toLowerCase().replace(/&amp;/g, '&').replace(/[^a-z0-9\u00c0-\u024f ]+/g, ' ').replace(/\s+/g, ' ').trim();
+        // Cache hasil pencarian (hemat kuota: 1 pencarian = 100 dari 10.000 unit/hari)
+        const _MUSIC_YT_CACHE_KEY = 'musicYtCache';
+        function _musicYtCacheGet(k) {
+            try { return (JSON.parse(localStorage.getItem(_MUSIC_YT_CACHE_KEY) || '{}'))[k] || ''; } catch (e) { return ''; }
         }
-        function _musicYtCacheSet(q, ids) {
+        function _musicYtCacheSet(k, id) {
             try {
-                const m = JSON.parse(localStorage.getItem(MUSIC_YT_CACHE_KEY) || '{}');
-                delete m[q]; m[q] = ids;
-                const keys = Object.keys(m);
-                if (keys.length > 200) keys.slice(0, keys.length - 200).forEach(k => delete m[k]);
-                localStorage.setItem(MUSIC_YT_CACHE_KEY, JSON.stringify(m));
-            } catch (e) { _warn('_musicYtCacheSet', e); }
+                const c = JSON.parse(localStorage.getItem(_MUSIC_YT_CACHE_KEY) || '{}');
+                c[k] = id;
+                const keys = Object.keys(c);
+                if (keys.length > 300) keys.slice(0, keys.length - 300).forEach(x => delete c[x]);
+                localStorage.setItem(_MUSIC_YT_CACHE_KEY, JSON.stringify(c));
+            } catch (e) { _dbg('_musicYtCacheSet', e); }
         }
-        async function _musicSearchYt(q) {
+        async function _musicSearchYt(t) {
             _musicYtErr = '';
-            const ctrl = new AbortController();
-            const tm = setTimeout(() => ctrl.abort(), 8000);
-            try {
-                const url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&videoSyndicated=true&videoCategoryId=10&maxResults=5&q='
-                    + encodeURIComponent(q) + '&key=' + encodeURIComponent(YT_API_KEY);
-                const r = await fetch(url, { signal: ctrl.signal });
-                const d = await r.json();
-                if (!r.ok) {
-                    const reason = (d && d.error && d.error.errors && d.error.errors[0] && d.error.errors[0].reason) || ('HTTP ' + r.status);
-                    _musicYtErr = /quotaExceeded|dailyLimitExceeded|rateLimitExceeded/i.test(reason) ? 'quota' : 'key';
-                    _warn('_musicSearchYt', reason);
-                    return [];
-                }
-                return (d.items || []).map(it => it && it.id && it.id.videoId).filter(Boolean);
-            } catch (e) {
-                _musicYtErr = 'network';
-                _warn('_musicSearchYt', e);
-                return [];
-            } finally { clearTimeout(tm); }
+            const rawTitle = String(t.title || '');
+            const cleanTitle = _musicYtNorm(rawTitle.replace(/\(.*?\)|\[.*?\]/g, ' '));
+            const artist = _musicYtNorm(String(t.artist || '').split(/,|&| feat| ft\./i)[0]);
+            if (!cleanTitle) return null;
+            const cacheKey = artist + '|' + cleanTitle;
+            const cached = _musicYtCacheGet(cacheKey);
+            if (cached) return cached;
+            const BAD = /\b(karaoke|cover|remix|reaction|slowed|sped up|nightcore|instrumental|tutorial|lesson|8d|mashup)\b/;
+            const query = `${t.artist || ''} ${rawTitle.replace(/\(.*?\)|\[.*?\]/g, ' ')} official audio`.replace(/\s+/g, ' ').trim();
+            const run = async (withCategory) => {
+                const ctrl = new AbortController();
+                const tm = setTimeout(() => ctrl.abort(), 8000);
+                try {
+                    const url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=8'
+                        + (withCategory ? '&videoCategoryId=10' : '')
+                        + '&q=' + encodeURIComponent(query) + '&key=' + YOUTUBE_API_KEY;
+                    const r = await fetch(url, { signal: ctrl.signal });
+                    if (!r.ok) {
+                        let reason = '';
+                        try { const j = await r.json(); reason = (j.error && j.error.errors && j.error.errors[0] && j.error.errors[0].reason) || ''; } catch (e) {}
+                        _musicYtErr = /quota|rateLimit/i.test(reason) ? 'quota' : ('HTTP ' + r.status + (reason ? ' ' + reason : ''));
+                        _warn('_musicSearchYt', _musicYtErr);
+                        return null;
+                    }
+                    const d = await r.json();
+                    let best = null, bestScore = -99;
+                    for (const it of (d.items || [])) {
+                        if (!it.id || !it.id.videoId) continue;
+                        const vt = _musicYtNorm(it.snippet && it.snippet.title);
+                        const ch = _musicYtNorm(it.snippet && it.snippet.channelTitle);
+                        let sc = 0;
+                        if (vt.includes(cleanTitle)) sc += 3;
+                        if (artist && (vt.includes(artist) || ch.includes(artist))) sc += 2;
+                        if (/topic|vevo|official/.test(ch)) sc += 1;
+                        if (BAD.test(vt) && !BAD.test(cleanTitle)) sc -= 3;
+                        if (sc > bestScore) { bestScore = sc; best = it.id.videoId; }
+                    }
+                    // Minimal ada kecocokan judul atau artis — kalau tidak, lebih baik preview daripada lagu salah
+                    return bestScore >= 2 ? best : null;
+                } catch (e) {
+                    _musicYtErr = 'network';
+                    _warn('_musicSearchYt', e);
+                    return null;
+                } finally { clearTimeout(tm); }
+            };
+            let id = await run(true);
+            if (!id && !_musicYtErr) id = await run(false);
+            if (id) _musicYtCacheSet(cacheKey, id);
+            return id;
         }
-        // Router perintah kontrol (play/pause/seek/volume/kecepatan) ke pemutar YouTube
-        function _musicDmPost(obj) {
-            const p = _musicYtPlayer;
-            if (!p || !p.getPlayerState) return;
-            try {
-                switch (obj.command) {
-                    case 'play':     p.playVideo(); break;
-                    case 'pause':    p.pauseVideo(); break;
-                    case 'seek':     p.seekTo(obj.parameters[0], true); break;
-                    case 'volume':   p.setVolume(Math.round(obj.parameters[0] * 100)); break;
-                    case 'setSpeed': p.setPlaybackRate(obj.parameters[0]); break;
-                }
-            } catch (e) { _dbg('_musicDmPost', e); }
+        // Kirim perintah kontrol ke iframe YouTube (protokol postMessage resmi IFrame API)
+        function _musicYtCmd(func, args) {
+            if (!_musicFrameWin) return;
+            try { _musicFrameWin.postMessage(JSON.stringify({ event: 'command', func: func, args: args || '' }), '*'); } catch (e) { _dbg('_musicYtCmd', e); }
         }
         function _musicYtPoll() {
             if (!_musicFrameWin) return;
-            const p = _musicYtPlayer;
-            if (p && p.getCurrentTime) {
-                try { _dmCurTime = p.getCurrentTime() || 0; const dd = p.getDuration() || 0; if (dd > 0) _musicLastDur = dd; }
-                catch (e) { _dbg('_musicYtPoll', e); }
-            }
             const cur = _dmCurTime, dur = _musicLastDur;
             const pct = dur > 0 ? Math.min(100, (cur / dur) * 100) : 0;
             const fmtT = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
@@ -4028,109 +4034,57 @@
                 ? '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>'
                 : '<i class="fa-solid fa-play" style="color:#111;font-size:24px;margin-left:3px"></i>';
         }
-        // Putar lagu penuh via YouTube
-        function _musicYtEnsureApi(cb) {
-            if (window.YT && YT.Player) { cb(); return; }
-            window._ytPendingSlides.push(cb);   // dijalankan oleh onYouTubeIframeAPIReady
-            loadYTApi();
-        }
-        function _musicYtDestroy() {
-            if (_musicYtPlayer) { try { _musicYtPlayer.destroy(); } catch (e) { _dbg('_musicYtDestroy', e); } _musicYtPlayer = null; }
-        }
-        function _musicYtLoadCandidate(token) {
-            if (token !== _musicYtReq) return;
-            if (_musicYtCandIdx >= _musicYtCands.length) {
-                showToast('Lagu ini tidak bisa diputar penuh — pakai preview 30 detik');
-                _musicStopYt();
-                _musicPlayPreview(_musicCurrentTrack);
+        // Putar lagu penuh via embed YouTube
+        async function _musicPlayYt(t) {
+            const vidId = await _musicSearchYt(t);
+            // Pengguna sudah pindah lagu selama pencarian berlangsung → batalkan
+            if (_musicCurrentTrack !== t) return;
+            if (!vidId) {
+                showToast(_musicYtErr === 'quota' ? 'Kuota YouTube hari ini habis — pakai preview 30 detik'
+                    : _musicYtErr ? 'Server lagu penuh tidak merespons — pakai preview 30 detik'
+                    : 'Lagu penuh tidak ditemukan — pakai preview 30 detik');
+                _musicPlayPreview(t);
                 return;
             }
-            const vidId = _musicYtCands[_musicYtCandIdx];
-            _musicStopPoll();
-            _musicYtDestroy();
-            _musicFrameWin = null;
+            _musicYtGotSignal = false;
             _dmCurTime = 0;
             _musicLastDur = 0;
-            const ph = document.getElementById('musicYtPlayer');
-            if (!ph) return;
-            ph.innerHTML = '';
-            const target = document.createElement('div');
-            target.id = 'musicYtTarget';
-            target.style.cssText = 'width:100%;height:100%';
-            ph.appendChild(target);
-            const tryNext = () => { if (token !== _musicYtReq) return; _musicYtCandIdx++; _musicYtLoadCandidate(token); };
-            const vars = { autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1, controls: 0, disablekb: 1, fs: 0 };
-            if (/^https?:$/.test(location.protocol)) vars.origin = location.origin;
-            _musicYtPlayer = new YT.Player('musicYtTarget', {
-                width: '100%', height: '100%', videoId: vidId, playerVars: vars,
-                events: {
-                    onReady: ev => {
-                        if (token !== _musicYtReq) return;
-                        try {
-                            const fr = ev.target.getIframe && ev.target.getIframe();
-                            if (fr) _musicFrameWin = fr.contentWindow;
-                            ev.target.setVolume(_lsVolume);
-                            ev.target.setPlaybackRate(_playbackRate);
-                            ev.target.playVideo();
-                        } catch (e) { _dbg('_musicYtLoadCandidate', e); }
-                    },
-                    onStateChange: ev => {
-                        if (token !== _musicYtReq) return;
-                        const st = ev.data;
-                        if (st === 1) { _musicYtGotSignal = true; _musicPlaying = true; _musicYtIcons(true); }
-                        else if (st === 2) { _musicPlaying = false; _musicYtIcons(false); }
-                        else if (st === 0 && _musicPlaying) { _musicPlaying = false; _musicYtIcons(false); musicNext(); } // selesai → lagu berikutnya
-                    },
-                    onAutoplayBlocked: () => {
-                        if (token !== _musicYtReq) return;
-                        _musicPlaying = false; _musicYtIcons(false);
-                        showToast('Ketuk tombol play untuk memulai lagu');
-                    },
-                    // 2 id tidak valid · 5 error HTML5 · 100 tidak ditemukan · 101/150 embed dilarang pemilik
-                    onError: ev => { _warn('_musicYtLoadCandidate', 'error ' + ev.data + ' (' + vidId + ')'); tryNext(); }
-                }
-            });
-            // Kalau iframe sudah terbentuk, tandai sekarang agar tombol play/pause langsung memakai pemutar ini
-            const fr0 = ph.querySelector('iframe');
-            if (fr0) _musicFrameWin = fr0.contentWindow;
-            _musicShowYtInPlayer(); // pastikan langsung terlihat kalau pemutar penuh sedang terbuka
-            _musicPollIv = setInterval(() => _musicYtPoll(), 1000);
-            if (_musicYtFailTimer) { clearTimeout(_musicYtFailTimer); _musicYtFailTimer = null; }
-        }
-        async function _musicPlayYt(q) {
-            if (!YT_API_KEY) {
-                if (!_ytNoKeyWarned) { _ytNoKeyWarned = true; showToast('Mode full butuh YouTube API key — sementara memakai preview 30 detik', 4500); }
-                _musicPlayPreview(_musicCurrentTrack);
-                return;
-            }
-            const token = ++_musicYtReq;
-            // Hentikan lagu sebelumnya langsung (jangan tunggu pencarian selesai)
             _musicStopPoll();
-            _musicYtDestroy();
             _musicFrameWin = null;
-            let ids = _musicYtCacheGet(q);
-            if (!ids || !ids.length) {
-                ids = await _musicSearchYt(q);
-                if (token !== _musicYtReq) return;            // lagu sudah diganti
-                // Kalau kata "official audio" membuat hasil kosong, coba lagi hanya artis + judul
-                if (!ids.length && !_musicYtErr && / - official audio$/.test(q)) {
-                    ids = await _musicSearchYt(q.replace(/ - official audio$/, ''));
-                    if (token !== _musicYtReq) return;
+            const ph = document.getElementById('musicYtPlayer');
+            if (ph) ph.innerHTML = '';
+            const f = document.createElement('iframe');
+            f.setAttribute('allow', 'autoplay; fullscreen; encrypted-media; picture-in-picture');
+            f.style.cssText = 'width:100%;height:100%;border:0;display:block';
+            f.src = `https://www.youtube.com/embed/${vidId}?enablejsapi=1&widgetid=1&autoplay=1&playsinline=1&controls=0&fs=0&rel=0&modestbranding=1&iv_load_policy=3`;
+            ph.appendChild(f);
+            _musicFrameWin = f.contentWindow;
+            _musicShowYtInPlayer(); // pastikan langsung terlihat kalau pemutar penuh sedang terbuka
+            // Jabat tangan "listening" supaya YouTube mengirim event (waktu, durasi, status),
+            // lalu atur volume & kecepatan begitu sinyal pertama diterima.
+            let tries = 0, sentInit = false;
+            const iv = setInterval(() => {
+                tries++;
+                if (_musicFrameWin !== f.contentWindow) { clearInterval(iv); return; } // lagu sudah diganti
+                if (!_musicYtGotSignal) {
+                    try { f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), '*'); } catch (e) {}
+                } else if (!sentInit) {
+                    sentInit = true;
+                    _musicYtCmd('setVolume', [parseInt(document.getElementById('musicVolumeSlider')?.value, 10) || _lsVolume]);
+                    _musicYtCmd('setPlaybackRate', [_playbackRate]);
+                    clearInterval(iv);
                 }
-                if (ids.length) _musicYtCacheSet(q, ids);
-            }
-            if (!ids.length) {
-                const msg = { quota: 'Kuota YouTube hari ini habis', key: 'API key YouTube bermasalah (cek key & pembatasannya)', network: 'Server YouTube tidak merespons' }[_musicYtErr] || 'Lagu penuh tidak ditemukan';
-                showToast(msg + ' — pakai preview 30 detik', 4000);
-                _musicPlayPreview(_musicCurrentTrack);
-                return;
-            }
-            _musicYtCands = ids; _musicYtCandIdx = 0; _musicYtGotSignal = false;
-            _musicYtEnsureApi(() => _musicYtLoadCandidate(token));
+                if (tries > 40) clearInterval(iv);
+            }, 500);
+            _musicPollIv = setInterval(() => _musicYtPoll(), 1000);
+            // Tidak ada fallback otomatis ke preview 30 detik setelah video ditemukan.
+            // Kalau 12 detik belum ada sinyal, cukup beri petunjuk (video mungkin menunggu ketukan).
+            if (_musicYtFailTimer) clearTimeout(_musicYtFailTimer);
+            _musicYtFailTimer = setTimeout(() => {
+                if (!_musicYtGotSignal && _musicFrameWin === f.contentWindow) showToast('Ketuk video untuk memulai pemutaran');
+            }, 12000);
         }
         function _musicStopYt() {
-            _musicYtReq++;                // batalkan pencarian/pemuatan yang masih berjalan
-            _musicYtDestroy();
             if (_musicYtFailTimer) { clearTimeout(_musicYtFailTimer); _musicYtFailTimer = null; }
             _musicStopPoll();
             const ph = document.getElementById('musicYtPlayer');
@@ -4185,7 +4139,7 @@
             _musicPlaying = true;
             if (_musicFullMode && t.title) {
                 _musicStopAudio();
-                _musicPlayYt(`${t.artist || ''} ${t.title} - official audio`);
+                _musicPlayYt(t);
             } else {
                 _musicStopYt();
                 _musicPlayPreview(t);
@@ -4252,11 +4206,11 @@
             if (_musicFullMode && _musicFrameWin) {
                 // Mode lagu penuh — pause benar-benar menghentikan suara
                 if (_musicPlaying) {
-                    _musicDmPost({command: 'pause'});
+                    _musicYtCmd('pauseVideo');
                     _musicPlaying = false;
                     _musicYtIcons(false);
                 } else {
-                    _musicDmPost({command: 'play'});
+                    _musicYtCmd('playVideo');
                     _musicPlaying = true;
                     _musicYtIcons(true);
                 }
@@ -4329,7 +4283,7 @@
             const rect = bar.getBoundingClientRect();
             const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
             if (_musicFullMode && _musicFrameWin && _musicLastDur > 0) {
-                _musicDmPost({command: 'seek', parameters: [pct * _musicLastDur]});
+                _musicYtCmd('seekTo', [pct * _musicLastDur, true]);
                 document.getElementById('musicFullProgress').style.width = (pct * 100) + '%';
                 return;
             }
@@ -4338,7 +4292,7 @@
         }
         function musicSetVolume(v) {
             if (_musicFullMode && _musicFrameWin) {
-                _musicDmPost({command: 'volume', parameters: [(parseInt(v, 10) || 0) / 100]});
+                _musicYtCmd('setVolume', [parseInt(v, 10) || 0]);
                 return;
             }
             if (_musicAudio) _musicAudio.volume = v / 100;
@@ -4758,7 +4712,7 @@
         }
         function _navAction(target) {
             // Tutup semua modal yang mungkin terbuka
-            try { if(document.getElementById('tvModal').style.display==='block'){ document.getElementById('tvPlayerFrame').src=''; _destroyHls(); const _tvv=document.getElementById('tvPlayerVideo'); if(_tvv){_tvv.pause();_tvv.removeAttribute('src');_tvv.load();} document.getElementById('tvModal').style.display='none'; document.body.style.overflow='auto'; const _gbn=document.getElementById('globalBottomNav'); if(_gbn)_gbn.style.display='flex'; }} catch (e) { _dbg('_navAction', e); }
+            try { if(document.getElementById('tvModal').style.display==='block'){ document.getElementById('tvPlayerFrame').src=''; _destroyHls(); const _tvv=document.getElementById('tvPlayerVideo'); if(_tvv){_tvv.pause();_tvv.removeAttribute('src');_tvv.load();} document.getElementById('tvModal').style.display='none'; document.body.style.overflow='auto'; }} catch (e) { _dbg('_navAction', e); }
             try { if(document.getElementById('livesportModal')&&document.getElementById('livesportModal').style.display==='flex') closeLivesportModal(); } catch (e) { _warn('_navAction', e); }
             try { if(document.getElementById('musicModal')&&document.getElementById('musicModal').style.display==='flex' && target!=='music') { document.getElementById('musicModal').style.display='none'; document.body.style.overflow='auto'; } } catch (e) { _warn('_navAction', e); }
             try { if(document.getElementById('reelsModal')&&document.getElementById('reelsModal').style.display==='block') _closeReelsSilent(); } catch (e) { _warn('_navAction', e); }
@@ -5747,8 +5701,8 @@
             if(window.currentMediaId && window.currentMediaType) {
                 const isTV = window.currentMediaType === 'tv';
                 const downloadUrl = isTV
-                    ? `https://vidvault.ru/tv/${window.currentMediaId}/${activeSeason || 1}/${activeEpisode || 1}`
-                    : `https://vidvault.ru/movie/${window.currentMediaId}`;
+                    ? `https://vidvault.to/tv/${window.currentMediaId}/${activeSeason || 1}/${activeEpisode || 1}`
+                    : `https://vidvault.to/movie/${window.currentMediaId}`;
                 window.open(downloadUrl, '_blank');
                 addToDownloadLib('vidvault', downloadUrl);
             } else {
@@ -5783,7 +5737,7 @@
             const id = window.currentMediaId;
             const s = activeSeason || 1;
             if (!id) { showToast('Media tidak ditemukan.'); return; }
-            const epUrl = `https://vidvault.ru/tv/${id}/${s}/${epNum}`;
+            const epUrl = `https://vidvault.to/tv/${id}/${s}/${epNum}`;
             window.open(epUrl, '_blank');
             addToDownloadLib(`vidvault E${epNum}`, epUrl);
         }
@@ -5868,16 +5822,8 @@
         }
 
         function _closeTvModalSilent() {
-            // Sama seperti closeTvModal (tanpa ubah history): hentikan siaran & kembalikan navigasi bawah
-            musicResumeFromDuck();
-            document.getElementById('tvPlayerFrame').src = '';
-            _destroyHls();
-            const video = document.getElementById('tvPlayerVideo');
-            if (video) { video.pause(); video.removeAttribute('src'); video.load(); }
             document.getElementById('tvModal').style.display = 'none';
             document.body.style.overflow = 'auto';
-            const _gbn = document.getElementById('globalBottomNav'); if (_gbn) _gbn.style.display = 'flex';
-            updateActiveNav('home');
         }
 
         function _closeReelsSilent() {
@@ -7285,41 +7231,30 @@
             }
         }
 
-        // postMessage dari pemutar YouTube (musik penuh & trailer)
+        // postMessage dari player musik (YouTube) & video trailer (YouTube)
         window.addEventListener('message', e => {
             try {
                 const d = JSON.parse(e.data);
-                if (d.event !== 'infoDelivery' || !d.info) return;
-                // PEMUTAR MUSIK FULL (YouTube) — update progress mini & full player
+                // PEMUTAR MUSIK FULL (YouTube) — progress, play/pause, selesai
                 if (_musicFrameWin && e.source === _musicFrameWin) {
-                    const cur = typeof d.info.currentTime === 'number' ? d.info.currentTime : 0;
-                    const dur = typeof d.info.duration === 'number' ? d.info.duration : 0;
-                    if (dur > 0) _musicYtGotSignal = true;
-                    _musicLastDur = dur;
-                    const pct = dur > 0 ? (cur / dur * 100) : 0;
-                    const fmtT = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
-                    const mp = document.getElementById('musicMiniProgress'); if (mp) mp.style.width = pct + '%';
-                    const fp = document.getElementById('musicFullProgress'); if (fp) fp.style.width = pct + '%';
-                    const ft = document.getElementById('musicFullThumb');   if (ft) ft.style.left = pct + '%';
-                    const cT = document.getElementById('musicFullCurTime'); if (cT) cT.textContent = fmtT(cur);
-                    const dT = document.getElementById('musicFullDurTime'); if (dT) dT.textContent = fmtT(dur);
-                    if (typeof d.info.playerState === 'number') {
-                        if (d.info.playerState === 1 && !_musicPlaying) {
-                            _musicPlaying = true;
-                            document.getElementById('musicMiniPlayBtn').className = 'fa-solid fa-pause';
-                            document.getElementById('musicFullPlayBtn').innerHTML = '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>';
-                        } else if (d.info.playerState === 2 && _musicPlaying) {
-                            _musicPlaying = false;
-                            document.getElementById('musicMiniPlayBtn').className = 'fa-solid fa-play';
-                            document.getElementById('musicFullPlayBtn').innerHTML = '<i class="fa-solid fa-play" style="color:#111;font-size:24px;margin-left:3px"></i>';
-                        } else if (d.info.playerState === 0 && _musicPlaying) {
-                            // Lagu selesai — lanjut otomatis ke lagu berikutnya
-                            _musicPlaying = false;
-                            musicNext();
-                        }
+                    const info = (d && typeof d.info === 'object' && d.info) ? d.info : {};
+                    let state = (typeof info.playerState === 'number') ? info.playerState : undefined;
+                    if (d && d.event === 'onStateChange' && typeof d.info === 'number') state = d.info;
+                    if (typeof info.duration === 'number' && info.duration > 0) { _musicLastDur = info.duration; _musicYtGotSignal = true; }
+                    if (typeof info.currentTime === 'number') { _dmCurTime = info.currentTime; _musicYtGotSignal = true; }
+                    if (d && (d.event === 'onReady' || d.event === 'initialDelivery')) _musicYtGotSignal = true;
+                    _musicYtPoll();
+                    if (state === 1 && !_musicPlaying) { _musicPlaying = true; _musicYtIcons(true); }
+                    else if (state === 2 && _musicPlaying) { _musicPlaying = false; _musicYtIcons(false); }
+                    else if (state === 0 && _musicPlaying) {
+                        // Lagu selesai — lanjut otomatis ke lagu berikutnya
+                        _musicPlaying = false;
+                        _musicYtIcons(false);
+                        musicNext();
                     }
                     return;
                 }
+                if (!d || d.event !== 'infoDelivery' || !d.info) return;
                 // Hanya proses pesan dari video modal/landscape — abaikan pemutar lain
                 // (musik YouTube, reels) supaya tidak terjadi loop pause/play.
                 const srcWin = e.source;
@@ -7707,8 +7642,8 @@
             if (!id || !type) return;
             const isTV = type === 'tv';
             const url = isTV
-                ? `https://vidvault.ru/tv/${id}/1/1`
-                : `https://vidvault.ru/movie/${id}`;
+                ? `https://vidvault.to/tv/${id}/1/1`
+                : `https://vidvault.to/movie/${id}`;
             window.open(url, '_blank');
         }
 
@@ -7738,8 +7673,8 @@
             if (btn && btn.classList) { btn.classList.add('pressed'); setTimeout(() => btn && btn.classList.remove('pressed'), 300); }
             const isTV = _rdsCurrentType === 'tv';
             const url = isTV
-                ? `https://vidvault.ru/tv/${_rdsCurrentId}/1/1`
-                : `https://vidvault.ru/movie/${_rdsCurrentId}`;
+                ? `https://vidvault.to/tv/${_rdsCurrentId}/1/1`
+                : `https://vidvault.to/movie/${_rdsCurrentId}`;
             window.open(url, '_blank');
             addToDownloadLib('vidvault (reels)', url);
         }
@@ -10575,6 +10510,7 @@
             if (tt) tt.classList.add('active');
             const gr = document.getElementById('genreChipsRow');
             if (gr) gr.style.display = 'none';
+            const eg0 = document.getElementById('exploreGrid'); if (eg0) eg0.style.paddingBottom = '12px';
             loadExploreTrending();
         }
 
@@ -10583,6 +10519,8 @@
             document.querySelectorAll('[id^="exploreTab-"]').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
             const gr = document.getElementById('genreChipsRow');
+            const eg1 = document.getElementById('exploreGrid');
+            if (eg1) eg1.style.paddingBottom = (tab === 'genres') ? '64px' : '12px';
             if (tab === 'trending') {
                 if (gr) gr.style.display = 'none';
                 loadExploreTrending();
@@ -10955,7 +10893,7 @@
         function _speedApply() {
             const v = document.getElementById(`vid-${currentIdx}`);
             if (v) { try { v.contentWindow.postMessage(JSON.stringify({event:'command', func:'setPlaybackRate', args:[_playbackRate]}), '*'); } catch (e) { _dbg('_speedApply', e); } }
-            if (_musicFrameWin) { _musicDmPost({command: 'setSpeed', parameters: [_playbackRate]}); }
+            if (_musicFrameWin) { _musicYtCmd('setPlaybackRate', [_playbackRate]); }
             if (_musicAudio) { try { _musicAudio.playbackRate = _playbackRate; } catch (e) { _dbg('_speedApply', e); } }
             const l1 = document.getElementById('speedLabel'); if (l1) l1.innerText = _playbackRate + '×';
             const l2 = document.getElementById('lsSpeedLabel'); if (l2) l2.innerText = _playbackRate + '×';
