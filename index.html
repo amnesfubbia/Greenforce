@@ -1881,7 +1881,7 @@
         }
         #mainProfile, .bottom-nav, #searchOverlay, .modal-player, .actor-modal,
         #actorPhotosModal, #decadeModal, #lightboxModal, #livesportModal,
-        #movieografiModal, #musicModal, #notifModal, #reelsModal, #soundtrackModal, #creditsModal,
+        #movieografiModal, #musicModal, #notifModal, #reelsModal, #soundtrackModal, #creditsModal, #awardsModal,
         #tvModal, #sideMenu, #splashScreen, .landscape-overlay {
             max-width: 480px !important;
             margin-left: auto !important;
@@ -2008,6 +2008,17 @@
         .ep-action-btn { height: 32px; padding: 0 4px; box-sizing: border-box; }
         .ep-page-btn { height: 32px; padding: 0 16px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; }
         .ep-pagination { padding: 16px 0 0; }
+
+        /* ===== RONDE 5: penghargaan & festival ===== */
+        .aw-year { font-size: 11px; font-weight: 800; color: #666; letter-spacing: 2px; margin: 16px 0 4px; }
+        .aw-row { display: flex; align-items: baseline; gap: 8px; padding: 9px 0; border-bottom: 1px solid #0f0f0f; font-size: 13px; color: #eee; line-height: 1.35; }
+        .aw-row i { width: 14px; text-align: center; font-size: 11px; flex-shrink: 0; }
+        .aw-row.clickable { cursor: pointer; }
+        .aw-row.clickable:active { opacity: 0.6; }
+        .aw-row .aw-tag { margin-left: auto; padding-left: 8px; font-size: 10px; color: #666; flex-shrink: 0; }
+        .aw-sug { padding: 10px 12px; border-bottom: 1px solid #161616; cursor: pointer; }
+        .aw-sug:last-child { border-bottom: none; }
+        .aw-sug:active { background: #151515; }
     </style>
 </head>
 <body>
@@ -2154,42 +2165,15 @@
         </div>
 
         <!-- Features -->
-        <div class="about-section-label">Fitur Utama</div>
+        <div class="about-section-label">Fitur Unggulan</div>
         <div class="about-feature-list">
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a1a2e">
-                    <i class="fa-solid fa-clapperboard" style="color:#6c8efb"></i>
+                    <i class="fa-solid fa-layer-group" style="color:#6c8efb"></i>
                 </div>
                 <div class="about-feat-text">
-                    <div class="about-feat-title">Database Luas</div>
-                    <div class="about-feat-desc">Akses lebih dari 35.000 judul movie dan serial TV dari seluruh dunia via TMDb.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#1a2a1a">
-                    <i class="fa-solid fa-magnifying-glass" style="color:#4caf7d"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Smart Search + Explore</div>
-                    <div class="about-feat-desc">Cari judul, aktor, atau studio. Filter genre, tahun, rating, negara. Jelajahi Trending, Genre, & New Releases langsung dari halaman pencarian.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#1a1a2e">
-                    <i class="fa-solid fa-users" style="color:#60a5fa"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Profil Pemeran Lengkap</div>
-                    <div class="about-feat-desc">Lihat biodata, foto, dan filmografi lengkap setiap aktor. Tampilan filmografi landscape eksklusif berbeda dari halaman lain.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#2a1a1a">
-                    <i class="fa-solid fa-box-archive" style="color:#e57373"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Personal Archive</div>
-                    <div class="about-feat-desc">Simpan film ke Bookmark & Suka. Riwayat tontonan tersimpan otomatis secara lokal di perangkat.</div>
+                    <div class="about-feat-title">Semua dalam Satu Aplikasi</div>
+                    <div class="about-feat-desc">Film, serial, Live TV &amp; IPTV, Live Sport, Reels trailer, dan musik dalam satu aplikasi — tanpa perlu pindah-pindah aplikasi.</div>
                 </div>
             </div>
             <div class="about-feature-row">
@@ -2197,8 +2181,8 @@
                     <i class="fa-solid fa-earth-americas" style="color:#ffca28"></i>
                 </div>
                 <div class="about-feat-text">
-                    <div class="about-feat-title">Multi-Server Streaming</div>
-                    <div class="about-feat-desc">2 server streaming terpilih yang sudah diuji aman dari redirect iklan (pakai sandbox browser). Auto-skip otomatis ke server berikutnya kalau satu server gagal dimuat.</div>
+                    <div class="about-feat-title">Streaming Multi-Server dengan Auto-Skip</div>
+                    <div class="about-feat-desc">Server streaming yang diuji aman dari redirect iklan (sandbox browser). Kalau satu server gagal dimuat, otomatis pindah ke server berikutnya.</div>
                 </div>
             </div>
             <div class="about-feature-row">
@@ -2206,8 +2190,8 @@
                     <i class="fa-solid fa-download" style="color:#34d399"></i>
                 </div>
                 <div class="about-feat-text">
-                    <div class="about-feat-title">Multi-Server Download</div>
-                    <div class="about-feat-desc">3 server download tersedia untuk movie & series, termasuk per episode. Pilih server terbaik sesuai koneksi.</div>
+                    <div class="about-feat-title">Unduh Multi-Server per Episode</div>
+                    <div class="about-feat-desc">3 server unduhan untuk film dan serial, termasuk per episode, dengan Pustaka Unduhan untuk mencatat yang sudah diunduh.</div>
                 </div>
             </div>
             <div class="about-feature-row">
@@ -2215,8 +2199,8 @@
                     <i class="fa-solid fa-tv" style="color:#a78bfa"></i>
                 </div>
                 <div class="about-feat-text">
-                    <div class="about-feat-title">Live TV — Embed, IPTV & Favorit</div>
-                    <div class="about-feat-desc">3 tab Live TV: Embed (channel TV nasional & lokal Indonesia), IPTV (ratusan channel dari playlist terbuka iptv-org), dan Favorit (channel pilihanmu dari kedua sumber). Ditambah Live Sport & Highlight terpisah untuk nonton pertandingan olahraga.</div>
+                    <div class="about-feat-title">Live TV Indonesia &amp; Dunia</div>
+                    <div class="about-feat-desc">Tab Embed (channel TV nasional &amp; lokal), IPTV (ratusan channel dari playlist terbuka), dan Favorit, ditambah Live Sport &amp; Highlight.</div>
                 </div>
             </div>
             <div class="about-feature-row">
@@ -2225,25 +2209,7 @@
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Reels Trailer Mode</div>
-                    <div class="about-feat-desc">Jelajahi trailer film & serial bergaya TikTok — scroll vertikal, suka, simpan, dan buka detail langsung.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#201a20">
-                    <i class="fa-solid fa-circle-info" style="color:#f472b6"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Detail Lengkap per Judul</div>
-                    <div class="about-feat-desc">Sutradara, Penulis, Anggaran, Pendapatan, Pemeran, Sinopsis EN/ID toggle, rating & sinopsis per episode dengan terjemahan, soundtrack, Tontonan Serupa multi-sumber.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#1a1a20">
-                    <i class="fa-solid fa-trophy" style="color:#facc15"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Rating Tertinggi per Dekade</div>
-                    <div class="about-feat-desc">Jelajahi film & series terbaik sepanjang era — 70s hingga 2020s — berdasarkan rating tertinggi.</div>
+                    <div class="about-feat-desc">Jelajahi trailer film &amp; serial bergaya TikTok — geser vertikal, suka, simpan, dan buka detail langsung.</div>
                 </div>
             </div>
             <div class="about-feature-row">
@@ -2251,8 +2217,35 @@
                     <i class="fa-solid fa-language" style="color:#fb923c"></i>
                 </div>
                 <div class="about-feat-text">
-                    <div class="about-feat-title">Terjemahan Sinopsis</div>
-                    <div class="about-feat-desc">Tombol Lihat Terjemahan / Lihat Asli untuk sinopsis film, series, maupun per episode. Terjemahan di-cache lokal untuk akses cepat.</div>
+                    <div class="about-feat-title">Terjemahan Sinopsis per Episode</div>
+                    <div class="about-feat-desc">Lihat Terjemahan / Lihat Asli untuk sinopsis film, serial, bahkan tiap episode. Hasilnya disimpan lokal supaya cepat.</div>
+                </div>
+            </div>
+            <div class="about-feature-row">
+                <div class="about-feat-icon-wrap" style="background:#1a1a20">
+                    <i class="fa-solid fa-trophy" style="color:#facc15"></i>
+                </div>
+                <div class="about-feat-text">
+                    <div class="about-feat-title">Penghargaan &amp; Festival</div>
+                    <div class="about-feat-desc">Ringkasan penghargaan di tiap film, plus halaman khusus Oscar, Golden Globe, BAFTA, Cannes, Venice, Berlin, Emmy, Piala Citra, dan penghargaan lain yang bisa dicari.</div>
+                </div>
+            </div>
+            <div class="about-feature-row">
+                <div class="about-feat-icon-wrap" style="background:#201a20">
+                    <i class="fa-solid fa-user-pen" style="color:#f472b6"></i>
+                </div>
+                <div class="about-feat-text">
+                    <div class="about-feat-title">Telusuri Sutradara, Penulis &amp; Studio</div>
+                    <div class="about-feat-desc">Ketuk nama sutradara, penulis, atau studio di halaman film untuk melihat film dan serial lain dari mereka.</div>
+                </div>
+            </div>
+            <div class="about-feature-row">
+                <div class="about-feat-icon-wrap" style="background:#2a1a1a">
+                    <i class="fa-solid fa-box-archive" style="color:#e57373"></i>
+                </div>
+                <div class="about-feat-text">
+                    <div class="about-feat-title">Cadangan Data Tanpa Akun</div>
+                    <div class="about-feat-desc">Bookmark, Suka, dan riwayat tontonan tersimpan di perangkat, bisa diekspor dan dipulihkan lewat file cadangan tanpa perlu membuat akun.</div>
                 </div>
             </div>
         </div>
@@ -2388,6 +2381,7 @@
                     <span class="dot-notify"></span>
                 </div>
                 <div class="flex gap-5">
+                    <i class="fa-solid fa-trophy btn-icon" onclick="openAwardsModal()" title="Penghargaan &amp; Festival"></i>
                     <i class="fa-regular fa-calendar btn-icon" onclick="openComingSoon()"></i>
                     <i class="fa-solid fa-bars btn-icon" onclick="toggleSideMenu()"></i>
                 </div>
@@ -2514,20 +2508,6 @@
                 <div id="decadeGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
             </div>
         </div>
-        <!-- Karya Director / Writer / Studio -->
-        <div id="creditsModal" style="display:none;position:fixed;inset:0;z-index:8500;background:#000;overflow-y:auto">
-            <div style="max-width:520px;margin:0 auto;padding:0 15px 68px">
-                <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:0 -15px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
-                    <i class="fa-solid fa-chevron-left btn-icon" onclick="closeCreditsModal()"></i>
-                    <div style="flex:1;min-width:0">
-                        <div id="creditsTitle" style="font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
-                        <div id="creditsSub" style="font-size:11px;color:#8e8e8e;margin-top:1px"></div>
-                    </div>
-                </div>
-                <div id="creditsTabs" style="display:flex;border-bottom:1px solid #1a1a1a;margin:0 -15px 12px"></div>
-                <div id="creditsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
-            </div>
-        </div>
         <!-- Search filter pills (hidden selects kept for JS compatibility) -->
         <div id="searchFilterBar" style="display:none;">
             <select id="searchYearFilter" onchange="applySearchFilters()" style="display:none"><option value="">Semua Tahun</option></select>
@@ -2594,6 +2574,38 @@
     </div>
 
     <!-- Heart pop untuk double tap like -->
+
+    <!-- Karya Director / Writer / Studio -->
+        <div id="creditsModal" style="display:none;position:fixed;inset:0;z-index:8500;background:#000;overflow-y:auto">
+            <div style="max-width:520px;margin:0 auto;padding:0 15px 68px">
+                <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:0 -15px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
+                    <i class="fa-solid fa-chevron-left btn-icon" onclick="closeCreditsModal()"></i>
+                    <div style="flex:1;min-width:0">
+                        <div id="creditsTitle" style="font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+                        <div id="creditsSub" style="font-size:11px;color:#8e8e8e;margin-top:1px"></div>
+                    </div>
+                </div>
+                <div id="creditsTabs" style="display:flex;border-bottom:1px solid #1a1a1a;margin:0 -15px 12px"></div>
+                <div id="creditsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+            </div>
+        </div>
+        <!-- Penghargaan & Festival -->
+        <div id="awardsModal" style="display:none;position:fixed;inset:0;z-index:8500;background:#000;overflow-y:auto">
+            <div style="max-width:520px;margin:0 auto;padding:0 15px 68px">
+                <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:0 -15px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
+                    <i class="fa-solid fa-chevron-left btn-icon" onclick="closeAwardsModal()"></i>
+                    <div style="flex:1;min-width:0;font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff;line-height:1.2">Penghargaan &amp; Festival</div>
+                    <i class="fa-solid fa-trophy" style="color:#f5c518;font-size:16px"></i>
+                </div>
+                <div id="awardsChips" class="no-scrollbar" style="display:flex;gap:8px;overflow-x:auto;margin:12px -15px 0;padding:0 15px;scrollbar-width:none"></div>
+                <input id="awardsSearchInp" type="text" placeholder="Cari penghargaan atau festival lain..." oninput="_awardsSearchInput(this.value)" autocomplete="off"
+                    style="width:100%;box-sizing:border-box;margin-top:12px;height:38px;padding:0 14px;border-radius:10px;background:#111;border:1px solid #2a2a2a;color:#fff;font-size:13px;outline:none">
+                <div id="awardsSuggest" style="display:none;margin-top:8px;background:#0d0d0d;border:1px solid #1c1c1c;border-radius:10px;overflow:hidden"></div>
+                <div id="awardsInfo" style="font-size:11px;color:#8e8e8e;margin-top:12px;line-height:1.5"></div>
+                <div id="awardsList"></div>
+                <div style="font-size:10px;color:#555;text-align:center;margin-top:20px">Sumber data: Wikidata · data bisa belum lengkap untuk beberapa tahun</div>
+            </div>
+        </div>
 
     <div id="movieModal" class="modal-player">
         <!-- Back to top button inside modal -->
@@ -4982,6 +4994,7 @@
             musicRenderNav('home');
         }
         function _navAction(target) {
+            try { closeAwardsModal(true); document.body.style.overflow = 'auto'; } catch (e) { _dbg('_navAction', e); }
             try { closeCreditsModal(); } catch (e) { _dbg('_navAction', e); }
             // Tutup semua modal yang mungkin terbuka
             try { if(document.getElementById('tvModal').style.display==='block'){ document.getElementById('tvPlayerFrame').src=''; _destroyHls(); const _tvv=document.getElementById('tvPlayerVideo'); if(_tvv){_tvv.pause();_tvv.removeAttribute('src');_tvv.load();} document.getElementById('tvModal').style.display='none'; document.body.style.overflow='auto'; }} catch (e) { _dbg('_navAction', e); }
@@ -6171,6 +6184,10 @@
 
         window.addEventListener('popstate', function(event) {
             const state = event.state ? event.state.view : null;
+
+            // Modal Penghargaan & Festival
+            const _awm = document.getElementById('awardsModal');
+            if (_awm && _awm.style.display === 'block') { closeAwardsModal(); return; }
 
             // Modal karya Director/Writer/Studio
             const _crm = document.getElementById('creditsModal');
@@ -11304,6 +11321,148 @@
         function handleSearchFilterBtn() {
             // Selalu buka decade modal (baik saat idle maupun saat ada hasil search)
             openDecadeModal();
+        }
+
+        // ===== PENGHARGAAN & FESTIVAL (Wikidata) =====
+        const AWARD_CEREMONIES = [
+            { k: 'oscar',  label: 'Oscar',        q: 'Academy Award for Best Picture' },
+            { k: 'globe',  label: 'Golden Globe', q: 'Golden Globe Award for Best Motion Picture – Drama' },
+            { k: 'bafta',  label: 'BAFTA',        q: 'BAFTA Award for Best Film' },
+            { k: 'cannes', label: 'Cannes',       q: "Palme d'Or" },
+            { k: 'venice', label: 'Venice',       q: 'Golden Lion' },
+            { k: 'berlin', label: 'Berlin',       q: 'Golden Bear' },
+            { k: 'emmy',   label: 'Emmy',         q: 'Primetime Emmy Award for Outstanding Drama Series' },
+            { k: 'citra',  label: 'Piala Citra (FFI)', q: 'Citra Award for Best Picture' }
+        ];
+        let _awardsReq = 0, _awardsKey = null, _awardsRows = [], _awardsYears = 8, _awardsSearchTimer = null;
+        const _awardsRowsCache = {};
+        async function _wdSearch(term, limit) {
+            const url = 'https://www.wikidata.org/w/api.php?action=wbsearchentities&type=item&language=en&format=json&origin=*&limit=' + (limit || 7) + '&search=' + encodeURIComponent(term);
+            const res = await fetch(url);
+            const j = await res.json();
+            return j.search || [];
+        }
+        function openAwardsModal() {
+            const m = document.getElementById('awardsModal');
+            if (!m) return;
+            m.style.display = 'block';
+            m.scrollTop = 0;
+            document.body.style.overflow = 'hidden';
+            history.pushState({ view: 'awards' }, '');
+            const chips = document.getElementById('awardsChips');
+            if (!chips.children.length) {
+                chips.innerHTML = AWARD_CEREMONIES.map(c => `<div class="decade-tab-chip" id="awChip-${c.k}" onclick="selectAward('${c.k}')">${c.label}</div>`).join('');
+            }
+            if (!_awardsKey) selectAward(AWARD_CEREMONIES[0].k);
+        }
+        function closeAwardsModal(silent) {
+            const m = document.getElementById('awardsModal');
+            if (m) m.style.display = 'none';
+            if (!silent) { document.body.style.overflow = 'auto'; history.replaceState({ view: 'home' }, ''); }
+        }
+        async function selectAward(key) {
+            const c = AWARD_CEREMONIES.find(x => x.k === key);
+            if (!c) return;
+            _awardsKey = key;
+            document.querySelectorAll('#awardsChips .decade-tab-chip').forEach(e => e.classList.toggle('active', e.id === 'awChip-' + key));
+            const sg = document.getElementById('awardsSuggest'); if (sg) sg.style.display = 'none';
+            const req = ++_awardsReq;
+            _awardsShowLoading();
+            try {
+                const hits = await _wdSearch(c.q, 7);
+                if (req !== _awardsReq) return;
+                const norm = t => String(t || '').toLowerCase().replace(/[–—-]/g, '-').trim();
+                const hit = hits.find(h => norm(h.label) === norm(c.q)) || hits[0];
+                if (!hit) { _awardsShowMsg('Penghargaan tidak ditemukan.'); return; }
+                await _awardsLoad(hit.id, hit.label, hit.description, req);
+            } catch (e) { _warn('selectAward', e); if (req === _awardsReq) _awardsShowMsg('Gagal memuat data penghargaan.'); }
+        }
+        async function pickAward(qid, label, desc) {
+            _awardsKey = null;
+            document.querySelectorAll('#awardsChips .decade-tab-chip').forEach(e => e.classList.remove('active'));
+            const sg = document.getElementById('awardsSuggest'); if (sg) sg.style.display = 'none';
+            const req = ++_awardsReq;
+            _awardsShowLoading();
+            try { await _awardsLoad(qid, label, desc, req); }
+            catch (e) { _warn('pickAward', e); if (req === _awardsReq) _awardsShowMsg('Gagal memuat data penghargaan.'); }
+        }
+        function _awardsShowLoading() {
+            document.getElementById('awardsInfo').textContent = 'Memuat...';
+            document.getElementById('awardsList').innerHTML = Array(6).fill('<div class="sk" style="width:100%;height:38px;border-radius:8px;margin-top:8px"></div>').join('');
+        }
+        function _awardsShowMsg(t) {
+            document.getElementById('awardsInfo').textContent = '';
+            document.getElementById('awardsList').innerHTML = `<div style="padding:30px 0;text-align:center;color:#666;font-size:12px">${t}</div>`;
+        }
+        async function _awardsLoad(qid, label, desc, req) {
+            let rows = _awardsRowsCache[qid];
+            if (!rows) {
+                const q = `SELECT ?filmLabel ?kind ?year ?tm ?tt WHERE { { ?film p:P166 ?s. ?s ps:P166 wd:${qid}. BIND("won" AS ?kind) OPTIONAL { ?s pq:P585 ?d } } UNION { ?film p:P1411 ?s. ?s ps:P1411 wd:${qid}. BIND("nom" AS ?kind) OPTIONAL { ?s pq:P585 ?d } } BIND(YEAR(?d) AS ?year) OPTIONAL { ?film wdt:P4947 ?tm } OPTIONAL { ?film wdt:P4983 ?tt } SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } } ORDER BY DESC(?year) LIMIT 600`;
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), 20000);
+                const res = await fetch('https://query.wikidata.org/sparql?format=json&query=' + encodeURIComponent(q), { headers: { Accept: 'application/sparql-results+json' }, signal: ctrl.signal });
+                clearTimeout(timer);
+                if (!res.ok) throw new Error('sparql ' + res.status);
+                const j = await res.json();
+                const seen = new Set();
+                rows = (j.results.bindings || []).map(b => ({
+                    name: b.filmLabel ? b.filmLabel.value : '',
+                    kind: b.kind.value,
+                    year: b.year ? b.year.value : '',
+                    tm: b.tm ? b.tm.value : '',
+                    tt: b.tt ? b.tt.value : ''
+                })).filter(r => {
+                    if (!r.name || /^Q\d+$/.test(r.name)) return false;
+                    const k = r.kind + '|' + r.name + '|' + r.year;
+                    if (seen.has(k)) return false;
+                    seen.add(k); return true;
+                });
+                _awardsRowsCache[qid] = rows;
+            }
+            if (req !== _awardsReq) return;
+            _awardsRows = rows;
+            _awardsYears = 8;
+            const wins = rows.filter(r => r.kind === 'won').length;
+            document.getElementById('awardsInfo').innerHTML = `<b style="color:#ddd">${_escAttr(label)}</b>${desc ? ' — ' + _escAttr(desc) : ''}<br>${wins} pemenang · ${rows.length - wins} nominasi tercatat`;
+            _awardsRender();
+        }
+        function _awardsRender() {
+            const list = document.getElementById('awardsList');
+            const rows = _awardsRows;
+            if (!rows.length) { _awardsShowMsg('Belum ada data untuk penghargaan ini.'); return; }
+            const byYear = {};
+            rows.forEach(r => { (byYear[r.year || '0'] = byYear[r.year || '0'] || []).push(r); });
+            const years = Object.keys(byYear).sort((a, b) => (b === '0') - (a === '0') || b - a);
+            const shown = years.slice(0, _awardsYears);
+            const rowHTML = r => {
+                const id = r.tm || r.tt;
+                const type = r.tm ? 'movie' : 'tv';
+                const click = id ? `onclick="closeAwardsModal(true); document.body.style.overflow='auto'; openModal(${id},'${type}')"` : '';
+                return `<div class="aw-row ${id ? 'clickable' : ''}" ${click}>
+                    <i class="${r.kind === 'won' ? 'fa-solid fa-trophy' : 'fa-regular fa-star'}" style="color:${r.kind === 'won' ? '#f5c518' : '#666'}"></i>
+                    <span>${_escAttr(r.name)}</span><span class="aw-tag">${r.kind === 'won' ? 'Pemenang' : 'Nominasi'}</span></div>`;
+            };
+            list.innerHTML = shown.map(y => {
+                const items = byYear[y].slice().sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'won' ? -1 : 1));
+                return `<div class="aw-year">${y === '0' ? 'TAHUN TIDAK DIKETAHUI' : y}</div>${items.map(rowHTML).join('')}`;
+            }).join('') + (years.length > shown.length
+                ? `<div class="toggle-btn" style="text-align:center;margin-top:16px;padding:8px" onclick="_awardsYears += 8; _awardsRender()">Tampilkan lebih banyak</div>` : '');
+        }
+        function _awardsSearchInput(v) {
+            clearTimeout(_awardsSearchTimer);
+            const sg = document.getElementById('awardsSuggest');
+            v = (v || '').trim();
+            if (v.length < 3) { sg.style.display = 'none'; return; }
+            _awardsSearchTimer = setTimeout(async () => {
+                try {
+                    const hits = await _wdSearch(v, 8);
+                    if (!hits.length) { sg.innerHTML = '<div style="padding:12px;color:#666;font-size:12px">Tidak ditemukan.</div>'; sg.style.display = 'block'; return; }
+                    sg.innerHTML = hits.map(h => `<div class="aw-sug" data-id="${h.id}" data-l="${_escAttr(h.label || '')}" data-d="${_escAttr(h.description || '')}" onclick="pickAward(this.dataset.id, this.dataset.l, this.dataset.d)">
+                        <div style="font-size:13px;color:#fff;font-weight:600">${_escAttr(h.label || h.id)}</div>
+                        ${h.description ? `<div style="font-size:11px;color:#777;margin-top:1px">${_escAttr(h.description)}</div>` : ''}</div>`).join('');
+                    sg.style.display = 'block';
+                } catch (e) { _warn('awardsSearch', e); }
+            }, 400);
         }
 
         // ===== KARYA DIRECTOR / WRITER / STUDIO =====
