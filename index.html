@@ -230,7 +230,7 @@
         .ig-date { color: #a8a8a8; font-size: 11px; text-transform: uppercase; }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background: #000; border-top: 1px solid #1c1c1c; display: flex; justify-content: space-around; align-items: center; padding: 0; height: 52px; z-index: 9000; }
-        .bottom-nav i { color: #a8a8a8; transition: color 0.3s; font-size: 20px; }
+        .bottom-nav i { color: #a8a8a8; transition: color 0.3s; font-size: 22px; }
         .bottom-nav i.active-nav { color: #fff; }
 
         /* ===== SAFE AREA INSET FIX (Android status bar) ===== */
@@ -902,7 +902,7 @@
         /* Music modal — labeled bottom nav (Home/Cari/Koleksi/Playlist) */
         .music-bottom-nav { height: 62px !important; padding-top:4px; position:absolute !important; bottom:0; left:0; right:0; z-index:40 !important; }
         .music-nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; color:#666; }
-        .music-nav-item i { font-size:19px; color:#666; transition:color 0.2s; }
+        .music-nav-item i { font-size:21px; color:#666; transition:color 0.2s; }
         .music-nav-item span { font-size:10px; font-weight:600; color:#666; transition:color 0.2s; }
         .music-nav-item.music-nav-active i, .music-nav-item.music-nav-active span { color:#fff; }
         .music-pill { flex-shrink:0; padding:8px 18px; border-radius:20px; background:#1a1a1a; color:#888; font-size:12px; font-weight:700; cursor:pointer; border:1px solid #1e1e1e; }
@@ -2019,6 +2019,75 @@
         .aw-sug { padding: 10px 12px; border-bottom: 1px solid #161616; cursor: pointer; }
         .aw-sug:last-child { border-bottom: none; }
         .aw-sug:active { background: #151515; }
+
+        /* ===== RONDE 7: dialog & pilihan AMOLED hitam ===== */
+        :root { color-scheme: dark; }
+        #seasonSel { pointer-events: none; }
+        .app-ov { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.72); display: flex; }
+        .app-sheet-ov { align-items: flex-end; justify-content: center; }
+        .app-sheet { width: 100%; max-width: 480px; max-height: 60vh; overflow-y: auto; background: #000; border: 1px solid #1c1c1c; border-bottom: none; border-radius: 16px 16px 0 0; padding: 4px 0 calc(8px + env(safe-area-inset-bottom, 0px)); }
+        .app-sheet-title { padding: 14px 20px 8px; font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #666; text-transform: uppercase; }
+        .app-sheet-row { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 48px; font-size: 15px; color: #cfcfcf; border-bottom: 1px solid #0f0f0f; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .app-sheet-row:active { background: #111; }
+        .app-sheet-row.on { color: #fff; font-weight: 700; }
+        .app-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #555; box-sizing: border-box; position: relative; flex-shrink: 0; }
+        .app-radio.on { border-color: var(--accent); }
+        .app-radio.on::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--accent); }
+        .app-dialog-ov { align-items: center; justify-content: center; padding: 24px; }
+        .app-dialog { width: 100%; max-width: 320px; background: #000; border: 1px solid #1c1c1c; border-radius: 16px; padding: 20px; }
+        .app-dialog-msg { font-size: 14px; color: #ddd; line-height: 1.5; white-space: pre-line; word-break: break-word; }
+        .app-dialog-input { width: 100%; box-sizing: border-box; margin-top: 12px; height: 38px; padding: 0 12px; border-radius: 8px; background: #111; border: 1px solid #2a2a2a; color: #fff; font-size: 12px; outline: none; }
+        .app-dialog-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+        .app-dialog-btns button { height: 36px; padding: 0 16px; border-radius: 8px; border: 1px solid #2a2a2a; background: #111; color: #ddd; font-size: 13px; font-weight: 700; }
+        .app-dialog-btns button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-on, #fff); }
+:root {
+            --ig-home: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M3%2011.2%2012%203l9%208.2V20a1%201%200%200%201-1%201h-5v-6a3%203%200%200%200-6%200v6H4a1%201%200%200%201-1-1z'/%3E%3C/svg%3E");
+            --ig-home-f: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23000'%20stroke='%23000'%20stroke-width='1'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M3%2011.2%2012%203l9%208.2V20a1%201%200%200%201-1%201h-5v-6a3%203%200%200%200-6%200v6H4a1%201%200%200%201-1-1z'/%3E%3C/svg%3E");
+            --ig-search: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='11'%20cy='11'%20r='7.5'/%3E%3Cpath%20d='m21%2021-4.8-4.8'/%3E%3C/svg%3E");
+            --ig-reels: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Crect%20x='3'%20y='3'%20width='18'%20height='18'%20rx='5'/%3E%3Cpath%20d='M3.5%208.5h17M9%203.2l3%205.3M15%203.2l3%205.3'/%3E%3Cpath%20d='M10.5%2012.3v5.4l4.6-2.7z'%20fill='%23000'%20stroke-width='1.5'/%3E%3C/svg%3E");
+            --ig-reels-f: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23000'%20stroke='%23000'%20stroke-width='1'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20fill-rule='evenodd'%20d='M8%203h8a5%205%200%200%201%205%205v8a5%205%200%200%201-5%205H8a5%205%200%200%201-5-5V8a5%205%200%200%201%205-5zM3.5%208h17v1.4h-17zM10.5%2012.3v5.4l4.6-2.7z'/%3E%3C/svg%3E");
+            --ig-cam: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Crect%20x='2.5'%20y='6'%20width='13'%20height='12'%20rx='3'/%3E%3Cpath%20d='m15.5%2010.5%206-3.5v10l-6-3.5'/%3E%3C/svg%3E");
+            --ig-cam-f: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23000'%20stroke='%23000'%20stroke-width='1'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M5.5%206h7a3%203%200%200%201%203%203v6a3%203%200%200%201-3%203h-7a3%203%200%200%201-3-3V9a3%203%200%200%201%203-3zM16.5%2010.4l5-3v9.2l-5-3z'/%3E%3C/svg%3E");
+            --ig-note: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M9%2018V5l11-2v13'/%3E%3Ccircle%20cx='6'%20cy='18'%20r='3'/%3E%3Ccircle%20cx='17'%20cy='16'%20r='3'/%3E%3C/svg%3E");
+            --ig-note-f: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23000'%20stroke='%23000'%20stroke-width='1'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20fill='none'%20d='M9%2018V5l11-2v13'/%3E%3Ccircle%20cx='6'%20cy='18'%20r='3'/%3E%3Ccircle%20cx='17'%20cy='16'%20r='3'/%3E%3C/svg%3E");
+            --ig-plane: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M22%203%209.22%2010.08'/%3E%3Cpath%20d='M22%203%2011.7%2020.33%209.22%2010.08%202%203z'/%3E%3C/svg%3E");
+            --ig-bm: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M5%203h14v18l-7-5.5L5%2021z'/%3E%3C/svg%3E");
+            --ig-bm-f: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23000'%20stroke='%23000'%20stroke-width='1'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M5%203h14v18l-7-5.5L5%2021z'/%3E%3C/svg%3E");
+            --ig-heart: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M16.792%203.904A4.989%204.989%200%200%201%2021.5%209.122c0%203.072-2.652%204.959-5.197%207.222-2.512%202.243-3.865%203.469-4.303%203.652-.438-.183-1.791-1.409-4.303-3.652C5.152%2014.08%202.5%2012.193%202.5%209.122a4.989%204.989%200%200%201%204.708-5.218%204.21%204.21%200%200%201%203.675%201.941c.84%201.175.98%201.763%201.12%201.763s.278-.588%201.11-1.766a4.17%204.17%200%200%201%203.679-1.938Z'/%3E%3C/svg%3E");
+            --ig-heart-f: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23000'%20stroke='%23000'%20stroke-width='1'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M16.792%203.904A4.989%204.989%200%200%201%2021.5%209.122c0%203.072-2.652%204.959-5.197%207.222-2.512%202.243-3.865%203.469-4.303%203.652-.438-.183-1.791-1.409-4.303-3.652C5.152%2014.08%202.5%2012.193%202.5%209.122a4.989%204.989%200%200%201%204.708-5.218%204.21%204.21%200%200%201%203.675%201.941c.84%201.175.98%201.763%201.12%201.763s.278-.588%201.11-1.766a4.17%204.17%200%200%201%203.679-1.938Z'/%3E%3C/svg%3E");
+        }
+
+        /* ===== RONDE 8: ikon gaya Instagram (kalender & piala tetap) =====
+           Glyph Font Awesome diganti bentuk Instagram lewat mask; warna tetap mengikuti teks (currentColor),
+           jadi status aktif/nonaktif & suka/simpan tetap bekerja seperti sebelumnya. */
+        .fa-house::before, .fa-magnifying-glass::before, .fa-clapperboard::before, .fa-tv::before, .fa-video::before,
+        .fa-music::before, .fa-share-nodes::before, .fa-bookmark::before, .fa-heart::before {
+            content: '' !important; display: inline-block; width: 1em; height: 1em; vertical-align: -0.125em;
+            background-color: currentColor; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+            -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain;
+        }
+        .fa-house::before { -webkit-mask-image: var(--ig-home); mask-image: var(--ig-home); }
+        .fa-magnifying-glass::before { -webkit-mask-image: var(--ig-search); mask-image: var(--ig-search); }
+        .fa-clapperboard::before { -webkit-mask-image: var(--ig-reels); mask-image: var(--ig-reels); }
+        .fa-tv::before, .fa-video::before { -webkit-mask-image: var(--ig-cam); mask-image: var(--ig-cam); }
+        .fa-music::before { -webkit-mask-image: var(--ig-note); mask-image: var(--ig-note); }
+        .fa-share-nodes::before { -webkit-mask-image: var(--ig-plane); mask-image: var(--ig-plane); }
+        .fa-regular.fa-bookmark::before { -webkit-mask-image: var(--ig-bm); mask-image: var(--ig-bm); }
+        .fa-solid.fa-bookmark::before { -webkit-mask-image: var(--ig-bm-f); mask-image: var(--ig-bm-f); }
+        .fa-regular.fa-heart::before { -webkit-mask-image: var(--ig-heart); mask-image: var(--ig-heart); }
+        .fa-solid.fa-heart::before { -webkit-mask-image: var(--ig-heart-f); mask-image: var(--ig-heart-f); }
+        /* menu aktif = ikon terisi, seperti di Instagram */
+        .nav-item-wrap.nav-active .fa-house::before { -webkit-mask-image: var(--ig-home-f); mask-image: var(--ig-home-f); }
+        .nav-item-wrap.nav-active .fa-clapperboard::before { -webkit-mask-image: var(--ig-reels-f); mask-image: var(--ig-reels-f); }
+        .nav-item-wrap.nav-active .fa-tv::before { -webkit-mask-image: var(--ig-cam-f); mask-image: var(--ig-cam-f); }
+        .nav-item-wrap.nav-active .fa-music::before, .music-nav-item.music-nav-active .fa-music::before { -webkit-mask-image: var(--ig-note-f); mask-image: var(--ig-note-f); }
+
+        /* ===== RONDE 9: ikon penghargaan (medali bergaya garis) ===== */
+        :root { --ig-award: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='12'%20cy='9'%20r='6'/%3E%3Cpath%20d='m12%206.3.9%201.9%202.1.3-1.5%201.5.4%202.1-1.9-1-1.9%201%20.4-2.1L9%208.5l2.1-.3z'%20stroke-width='1.4'/%3E%3Cpath%20d='M8.6%2014%207%2022l5-3%205%203-1.6-8'/%3E%3C/svg%3E"); }
+        .fa-award::before {
+            content: '' !important; display: inline-block; width: 1em; height: 1em; vertical-align: -0.125em;
+            background-color: currentColor; -webkit-mask: var(--ig-award) center/contain no-repeat; mask: var(--ig-award) center/contain no-repeat;
+        }
     </style>
 </head>
 <body>
@@ -2177,33 +2246,6 @@
                 </div>
             </div>
             <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#1a201a">
-                    <i class="fa-solid fa-earth-americas" style="color:#ffca28"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Streaming Multi-Server dengan Auto-Skip</div>
-                    <div class="about-feat-desc">Server streaming yang diuji aman dari redirect iklan (sandbox browser). Kalau satu server gagal dimuat, otomatis pindah ke server berikutnya.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#1a2020">
-                    <i class="fa-solid fa-download" style="color:#34d399"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Unduh Multi-Server per Episode</div>
-                    <div class="about-feat-desc">3 server unduhan untuk film dan serial, termasuk per episode, dengan Pustaka Unduhan untuk mencatat yang sudah diunduh.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#1a1a2a">
-                    <i class="fa-solid fa-tv" style="color:#a78bfa"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Live TV Indonesia &amp; Dunia</div>
-                    <div class="about-feat-desc">Tab Embed (channel TV nasional &amp; lokal), IPTV (ratusan channel dari playlist terbuka), dan Favorit, ditambah Live Sport &amp; Highlight.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a2020">
                     <i class="fa-solid fa-video" style="color:#34d399"></i>
                 </div>
@@ -2223,7 +2265,7 @@
             </div>
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a1a20">
-                    <i class="fa-solid fa-trophy" style="color:#facc15"></i>
+                    <i class="fa-solid fa-award" style="color:#facc15"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Penghargaan &amp; Festival</div>
@@ -2237,15 +2279,6 @@
                 <div class="about-feat-text">
                     <div class="about-feat-title">Telusuri Sutradara, Penulis &amp; Studio</div>
                     <div class="about-feat-desc">Ketuk nama sutradara, penulis, atau studio di halaman film untuk melihat film dan serial lain dari mereka.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#2a1a1a">
-                    <i class="fa-solid fa-box-archive" style="color:#e57373"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Cadangan Data Tanpa Akun</div>
-                    <div class="about-feat-desc">Bookmark, Suka, dan riwayat tontonan tersimpan di perangkat, bisa diekspor dan dipulihkan lewat file cadangan tanpa perlu membuat akun.</div>
                 </div>
             </div>
         </div>
@@ -2303,7 +2336,7 @@
             </div>
             <div class="about-info-row">
                 <span class="about-info-label">Trailer & Teaser</span>
-                <span class="about-info-value">YouTube / Dailymotion</span>
+                <span class="about-info-value">YouTube / iTunes</span>
             </div>
             <div class="about-info-row">
                 <span class="about-info-label">Streaming Server</span>
@@ -2382,7 +2415,7 @@
                     <span class="dot-notify"></span>
                 </div>
                 <div class="flex gap-5">
-                    <i class="fa-solid fa-trophy btn-icon" onclick="openAwardsModal()" title="Penghargaan &amp; Festival"></i>
+                    <i class="fa-solid fa-award btn-icon" onclick="openAwardsModal()" title="Penghargaan &amp; Festival"></i>
                     <i class="fa-regular fa-calendar btn-icon" onclick="openComingSoon()"></i>
                     <i class="fa-solid fa-bars btn-icon" onclick="toggleSideMenu()"></i>
                 </div>
@@ -2445,7 +2478,7 @@
 
     <div id="searchOverlay">
         <div class="search-header">
-            <i class="fa-solid fa-arrow-left btn-icon" onclick="closeSearch()"></i>
+            <i class="fa-solid fa-arrow-left btn-icon" onclick="_manualClose('search', closeSearch)"></i>
             <div class="search-input-box">
                 <i class="fa-solid fa-magnifying-glass text-zinc-500 text-xs"></i>
                 <input type="text" id="searchInp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search" placeholder="Cari film, serial, atau aktor..." onkeydown="if(event.key==='Enter') searchAction()" oninput="handleSearchInput(this.value)">
@@ -2491,7 +2524,7 @@
         <div id="decadeModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);overflow-y:auto">
             <div style="max-width:520px;margin:0 auto;padding:20px 15px 60px">
                 <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:-20px -15px 12px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
-                    <i class="fa-solid fa-chevron-left btn-icon" onclick="closeDecadeModal()"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('decade', closeDecadeModal)"></i>
                     <div style="font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff">Rating Tertinggi per Dekade</div>
                 </div>
                 <!-- Decade + type selector -->
@@ -2574,7 +2607,7 @@
         <div id="creditsModal" style="display:none;position:fixed;inset:0;z-index:8500;background:#000;overflow-y:auto">
             <div style="max-width:520px;margin:0 auto;padding:0 15px 68px">
                 <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:0 -15px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
-                    <i class="fa-solid fa-chevron-left btn-icon" onclick="closeCreditsModal()"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('credits', () => closeCreditsModal(true))"></i>
                     <div style="flex:1;min-width:0">
                         <div id="creditsTitle" style="font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
                         <div id="creditsSub" style="font-size:11px;color:#8e8e8e;margin-top:1px"></div>
@@ -2588,9 +2621,9 @@
         <div id="awardsModal" style="display:none;position:fixed;inset:0;z-index:8500;background:#000;overflow-y:auto">
             <div style="max-width:520px;margin:0 auto;padding:0 15px 68px">
                 <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:0 -15px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
-                    <i class="fa-solid fa-chevron-left btn-icon" onclick="closeAwardsModal()"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('awards', closeAwardsModal)"></i>
                     <div style="flex:1;min-width:0;font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff;line-height:1.2">Penghargaan &amp; Festival</div>
-                    <i class="fa-solid fa-trophy" style="color:#f5c518;font-size:16px"></i>
+                    <i class="fa-solid fa-award" style="color:#f5c518;font-size:18px"></i>
                 </div>
                 <div id="awardsChips" class="no-scrollbar" style="display:flex;gap:8px;overflow-x:auto;margin:12px -15px 0;padding:0 15px;scrollbar-width:none"></div>
                 <input id="awardsSearchInp" type="text" placeholder="Cari penghargaan atau festival lain..." oninput="_awardsSearchInput(this.value)" autocomplete="off"
@@ -2614,7 +2647,7 @@
         <div id="modalScrollTop" class="max-w-xl mx-auto pb-20">
             <div class="sticky top-0 bg-black z-[100] border-b border-zinc-900">
                 <div class="h-[54px] flex items-center" style="padding:0 15px;gap:10px">
-                    <i class="fa-solid fa-chevron-left btn-icon" onclick="closeModal()"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('modal', closeModal)"></i>
                     <div class="flex-grow text-center text-[14px] font-extrabold truncate" style="letter-spacing:-0.3px" id="mTitle"></div>
                     <div style="width:32px;flex-shrink:0"></div>
                 </div>
@@ -2774,7 +2807,7 @@
 
         <!-- Sticky top bar -->
         <div class="actor-topbar">
-            <i class="fa-solid fa-chevron-left actor-topbar-icon btn-icon" onclick="closeActorModal()"></i>
+            <i class="fa-solid fa-chevron-left actor-topbar-icon btn-icon" onclick="_manualClose('actor', closeActorModal)"></i>
             <div class="actor-topbar-title" id="actorHeaderTitle"></div>
             <i class="fa-solid fa-ellipsis actor-topbar-icon"></i>
         </div>
@@ -2850,7 +2883,7 @@
 
     <div id="tvModal">
         <div class="tv-topbar">
-            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeTvModal()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('tv', closeTvModal)"></i>
             <div class="tv-live-dot"></div>
             <div class="tv-topbar-title" id="tvTopbarTitle">Embed</div>
             <i class="fa-solid fa-magnifying-glass btn-icon" style="color:#8e8e8e" id="tvSearchIcon" onclick="focusTvSearch()"></i>
@@ -2900,7 +2933,7 @@
         <!-- Topbar — tombol back + judul Reels -->
         <div class="reels-topbar">
             <div style="display:flex;align-items:center;gap:10px;pointer-events:auto">
-                <i class="fa-solid fa-chevron-left reels-back-btn" onclick="closeReels()" style="pointer-events:auto;font-size:20px"></i>
+                <i class="fa-solid fa-chevron-left reels-back-btn" onclick="_manualClose('reels', closeReels)" style="pointer-events:auto;font-size:20px"></i>
                 <span style="font-size:16px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:-0.3px">Reels</span>
             </div>
             <div style="width:32px"></div>
@@ -2973,7 +3006,7 @@
     <!-- ===== CUSTOM LIGHTBOX ===== -->
     <div id="lightboxModal">
         <div class="lb-topbar">
-            <i class="fa-solid fa-xmark lb-close" onclick="closeLightbox()"></i>
+            <i class="fa-solid fa-xmark lb-close" onclick="_manualClose('lightbox', closeLightbox)"></i>
             <span class="lb-counter" id="lbCounter"></span>
             <i class="fa-solid fa-download lb-download" onclick="downloadLbImage()" id="lbDownloadBtn"></i>
         </div>
@@ -2987,7 +3020,7 @@
     <!-- ===== NOTIFIKASI FILM BARU ===== -->
     <div id="notifModal">
         <div class="notif-topbar">
-            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeNotif()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('notif', closeNotif)"></i>
             <div class="notif-topbar-title">Film Baru Hari Ini</div>
             <span class="notif-date-badge" id="notifDateBadge"></span>
         </div>
@@ -3000,7 +3033,7 @@
     <!-- ===== FOTO PEMERAN ===== -->
     <div id="actorPhotosModal">
         <div class="actor-photos-topbar">
-            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeActorPhotos()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('actorPhotos', closeActorPhotos)"></i>
             <div class="actor-photos-title" id="actorPhotosTitle">Foto</div>
             <div style="width:32px"></div>
         </div>
@@ -3361,7 +3394,15 @@
         let isLsPaused = false, isLsMuted = false, lsControlTimer;
         let currentImdbId = ""; 
         let lastTrailerSources = []; 
-        let currentDailymotionId = ""; 
+        let currentTrailerVideoUrl = "";   // pratinjau trailer (iTunes) untuk tombol Trailer
+        let _trailerBlobUrl = "";
+        // Halaman pemutar video sederhana (hitam, kontrol bawaan) untuk dimuat di iframe pemutar
+        function _trailerPageUrl(src) {
+            if (_trailerBlobUrl) { try { URL.revokeObjectURL(_trailerBlobUrl); } catch (e) {} }
+            const html = '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#000;height:100vh"><video src="' + src + '" controls autoplay playsinline style="width:100%;height:100%;background:#000;object-fit:contain"></video></body></html>';
+            _trailerBlobUrl = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+            return _trailerBlobUrl;
+        }
         
         let activeServerIdx = 1;
         let activeEpisode = 1;
@@ -3379,7 +3420,7 @@
             } catch(e) { return null; }
         }
         function saveLastWorkingServer(mediaId, srvIdx) {
-            if (!mediaId || srvIdx === 99) return; // 99 = trailer/dailymotion, bukan server streaming
+            if (!mediaId || srvIdx === 99) return; // 99 = trailer alternatif, bukan server streaming
             try {
                 const map = JSON.parse(localStorage.getItem(LAST_SERVER_KEY) || '{}');
                 map[mediaId] = srvIdx;
@@ -4369,7 +4410,7 @@
                 if (navigator.share) { await navigator.share({ title: title, text: `Nonton ${title} di amnesfubbia`, url: url }); return; }
             } catch (e) { if (e && e.name === 'AbortError') return; }
             try { await navigator.clipboard.writeText(url); showToast('Tautan disalin'); }
-            catch (e) { prompt('Salin tautan ini:', url); }
+            catch (e) { _appDialog({ message: 'Salin tautan ini:', input: url, okText: 'Tutup' }); }
         }
         // Buka otomatis kalau app dibuka lewat tautan ?m=movie-123 / ?m=tv-456
         window.addEventListener('load', () => {
@@ -4885,13 +4926,13 @@
                 navigator.share({ title: text, text: text }).catch(e => _dbg('musicShare', e));
             } else {
                 navigator.clipboard?.writeText(text);
-                alert('Info lagu disalin: ' + text);
+                _appDialog({ message: 'Info lagu disalin:\n' + text, okText: 'OK' });
             }
         }
 
         // ---------- DOWNLOAD ----------
         function musicDownload() {
-            if (!_musicCurrentTrack || !_musicCurrentTrack.preview) { alert('Tidak ada audio untuk diunduh'); return; }
+            if (!_musicCurrentTrack || !_musicCurrentTrack.preview) { showToast('Tidak ada audio untuk diunduh'); return; }
             const a = document.createElement('a');
             a.href = _musicCurrentTrack.preview;
             a.download = `${_musicCurrentTrack.artist} - ${_musicCurrentTrack.title}.m4a`;
@@ -4967,7 +5008,7 @@
                 // (di dalam modal), BUKAN pencarian film/series global.
                 if (containerId === 'tvBottomNav' && item.action === 'search') {
                     return `<div id="${containerId}-${item.id}" class="nav-item-wrap" onclick="focusTvSearch()">
-                        <i class="${item.icon} cursor-pointer" style="font-size:20px"></i>
+                        <i class="${item.icon} cursor-pointer" style="font-size:22px"></i>
                     </div>`;
                 }
                 // Active item: tidak perlu closeFunc (sudah di sini)
@@ -4975,7 +5016,7 @@
                     ? `${closeFunc}(); _navAction('${item.action}')`
                     : `_navAction('${item.action}')`;
                 return `<div id="${containerId}-${item.id}" class="nav-item-wrap ${isActive ? 'nav-active' : ''}" onclick="${onclick}">
-                    <i class="${item.icon} cursor-pointer" style="font-size:20px"></i>
+                    <i class="${item.icon} cursor-pointer" style="font-size:22px"></i>
                 </div>`;
             }).join('');
         }
@@ -6178,7 +6219,12 @@
         }
 
         window.addEventListener('popstate', function(event) {
+            if (Date.now() < _ignorePopUntil) { _ignorePopUntil = 0; return; } // pop yang kita picu sendiri saat menutup modal
             const state = event.state ? event.state.view : null;
+
+            // Pilihan Season / dialog kustom (tutup dulu sebelum modal di belakangnya)
+            const _sheet = document.querySelector('.app-ov');
+            if (_sheet) { _sheet.remove(); return; }
 
             // Modal Penghargaan & Festival
             const _awm = document.getElementById('awardsModal');
@@ -6186,7 +6232,7 @@
 
             // Modal karya Director/Writer/Studio
             const _crm = document.getElementById('creditsModal');
-            if (_crm && _crm.style.display === 'block') { _crm.style.display = 'none'; return; }
+            if (_crm && _crm.style.display === 'block') { _crm.style.display = 'none'; _resumeFilmTrailer(); return; }
 
             // Decade modal (z-index tertinggi, cek paling awal)
             if (document.getElementById('decadeModal') && document.getElementById('decadeModal').style.display === 'block') {
@@ -6462,7 +6508,7 @@
                 const active = (i === activeServerIdx) ? 'active-link' : '';
                 html += `<div class="ls-srv-btn ${active}" onclick="event.stopPropagation(); lsChangeServer(${i}, this)">Server ${i}</div>`;
             }
-            if (currentDailymotionId) {
+            if (currentTrailerVideoUrl) {
                 html += `<div class="ls-srv-btn ${activeServerIdx === 99 ? 'active-link' : ''}" onclick="event.stopPropagation(); lsChangeServer(99, this)">Trailer</div>`;
             }
             scroll.innerHTML = html;
@@ -6863,10 +6909,12 @@
                     if (!obj || obj.app !== 'amnesfubbia' || !obj.data || typeof obj.data !== 'object') throw new Error('format');
                     const keys = Object.keys(obj.data);
                     if (!keys.length) throw new Error('kosong');
-                    if (!confirm('Pulihkan ' + keys.length + ' data dari cadangan?\nData di perangkat ini akan ditimpa.')) return;
-                    keys.forEach(k => { if (typeof obj.data[k] === 'string') localStorage.setItem(k, obj.data[k]); });
-                    showToast('Cadangan dipulihkan — memuat ulang…');
-                    setTimeout(() => location.reload(), 900);
+                    appConfirm('Pulihkan ' + keys.length + ' data dari cadangan?\nData di perangkat ini akan ditimpa.', 'Pulihkan').then(ok => {
+                        if (!ok) return;
+                        keys.forEach(k => { if (typeof obj.data[k] === 'string') localStorage.setItem(k, obj.data[k]); });
+                        showToast('Cadangan dipulihkan — memuat ulang…');
+                        setTimeout(() => location.reload(), 900);
+                    });
                 } catch (e) { _warn('importBackup', e); showToast('File cadangan tidak valid'); }
             };
             rd.onerror = () => showToast('Gagal membaca file');
@@ -6986,6 +7034,7 @@
         }
 
         async function openActorProfile(actorId) {
+            _pauseFilmTrailer();
             window._currentActorId = actorId;
             window._currentOpenActorId = actorId; // Simpan untuk back navigation dari film
             lastTrailerSources = [];
@@ -9409,6 +9458,7 @@
         }
 
         async function openModal(id, type) {
+            _filmPausedByOverlay = false;
             musicDuckForOtherAudio();
             const actorModal = document.getElementById('actorModal');
             if (actorModal.style.display === 'block') actorModal.style.display = 'none';
@@ -9614,24 +9664,29 @@
                 await handleTrailerError();
             }
 
-            // Fetch Dailymotion secara background — tidak blokir render konten utama
-            currentDailymotionId = "";
+            // Trailer alternatif (iTunes Preview — video langsung, tanpa iklan) di latar belakang
+            currentTrailerVideoUrl = "";
             (async () => {
+                const myId = id;
                 try {
                     const qName = dEn.title || dEn.name || dId.title || dId.name;
                     const qYear = (dId.release_date || dId.first_air_date || "").split('-')[0];
-                    const searchQueryDaily = encodeURIComponent(`${qName} ${qYear} official trailer`);
-                    const dailyData = await new Promise((resolve, reject) => {
-                        const timer = setTimeout(() => reject(new Error('timeout')), 5000);
-                        fetch(`https://api.dailymotion.com/videos?search=${searchQueryDaily}&fields=id,title&limit=1`)
+                    const isTvItem = type === 'tv';
+                    const data = await new Promise((resolve, reject) => {
+                        const timer = setTimeout(() => reject(new Error('timeout')), 6000);
+                        fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(qName)}&media=${isTvItem ? 'tvShow' : 'movie'}&entity=${isTvItem ? 'tvSeason' : 'movie'}&limit=15`)
                             .then(r => r.json())
                             .then(d => { clearTimeout(timer); resolve(d); })
                             .catch(e => { clearTimeout(timer); reject(e); });
                     });
-                    if (dailyData.list && dailyData.list.length > 0) {
-                        currentDailymotionId = dailyData.list[0].id;
-                    }
-                } catch(e) { currentDailymotionId = ""; }
+                    const norm = t => String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+                    const target = norm(qName);
+                    const cands = (data.results || []).filter(r => r.previewUrl);
+                    const nameOf = r => norm(isTvItem ? String(r.collectionName || r.artistName || '').replace(/,?\s*season\s*\d+.*$/i, '') : (r.trackName || r.collectionName));
+                    const pick = cands.find(r => nameOf(r) === target && (!qYear || String(r.releaseDate || '').startsWith(qYear)))
+                              || cands.find(r => nameOf(r) === target);
+                    if (pick && window.currentMediaId === myId) currentTrailerVideoUrl = String(pick.previewUrl).replace('http://', 'https://');
+                } catch (e) { currentTrailerVideoUrl = ""; _dbg('itunesTrailer', e); }
             })();
 
             // Render cast dengan nama Latin (fetch person detail jika nama non-Latin)
@@ -10080,6 +10135,7 @@
         }
         
         function changeServer(srvIdx, el) {
+            if (srvIdx === 99 && !currentTrailerVideoUrl) { showToast('Trailer alternatif tidak tersedia untuk judul ini'); return; }
             if (!_isAutoAdvancing) _autoAdvanceCount = 0; // reset hitungan cuma kalau user pilih manual
             activeServerIdx = srvIdx;
             document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active-link'));
@@ -10158,7 +10214,7 @@
                 case 45: url = `https://production-player.vidrift.pages.dev/embed/${type}/${id}${seriesSuffix}`; break;
                 case 46: url = `https://primesrc.me/embed/${type}/${id}${seriesSuffix}`; break;
                 case 47: url = `https://fmovies4u.com/embed/${type}/${id}${seriesSuffix}`; break;
-                case 99: url = `https://www.dailymotion.com/embed/video/${currentDailymotionId}`; break;     default: url = type === 'tv'
+                case 99: url = _trailerPageUrl(currentTrailerVideoUrl); break;     default: url = type === 'tv'
                     ? `https://cinesrc.st/embed/tv/${id}?season=${s}&episode=${e}`
                     : `https://cinesrc.st/embed/movie/${id}`;
             }
@@ -11318,6 +11374,99 @@
             openDecadeModal();
         }
 
+        // ===== JEDA TRAILER saat layar lain menutupi modal film =====
+        let _filmPausedByOverlay = false;
+        function _pauseFilmTrailer() {
+            const mm = document.getElementById('movieModal');
+            if (!mm || mm.style.display !== 'block') return;
+            document.querySelectorAll('#carouselTrack iframe').forEach(f => {
+                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); _filmPausedByOverlay = true; }
+                catch (e) { _dbg('pauseFilmTrailer', e); }
+            });
+        }
+        function _resumeFilmTrailer() {
+            if (!_filmPausedByOverlay) return;
+            _filmPausedByOverlay = false;
+            const mm = document.getElementById('movieModal');
+            if (!mm || mm.style.display !== 'block') return;
+            document.querySelectorAll('#carouselTrack iframe').forEach(f => {
+                try { f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); }
+                catch (e) { _dbg('resumeFilmTrailer', e); }
+            });
+        }
+
+        // ===== RIWAYAT TOMBOL BACK =====
+        // Modal yang ditutup lewat tombol panah ikut membuang entri riwayat miliknya,
+        // supaya tombol back HP tidak perlu ditekan dua kali.
+        let _ignorePopUntil = 0;
+        function _manualClose(view, closeFn) {
+            const own = !!(history.state && history.state.view === view);
+            try { closeFn(); } catch (e) { _warn('manualClose', e); }
+            if (own) { _ignorePopUntil = Date.now() + 400; history.back(); }
+        }
+        function _closeSheet(ov) {
+            ov.remove();
+            if (history.state && history.state.view === 'sheet') { _ignorePopUntil = Date.now() + 400; history.back(); }
+        }
+
+        // ===== DIALOG & PILIHAN AMOLED (pengganti dialog bawaan Android yang tidak bisa diwarnai) =====
+        function _appDialog({ message, input, okText, cancelText }) {
+            return new Promise(resolve => {
+                const ov = document.createElement('div');
+                ov.className = 'app-ov app-dialog-ov';
+                ov.innerHTML = `<div class="app-dialog">
+                    <div class="app-dialog-msg"></div>
+                    ${input !== undefined ? '<input class="app-dialog-input" readonly>' : ''}
+                    <div class="app-dialog-btns">
+                        ${cancelText ? `<button type="button" data-r="0">${cancelText}</button>` : ''}
+                        <button type="button" data-r="1" class="primary">${okText || 'OK'}</button>
+                    </div></div>`;
+                ov.querySelector('.app-dialog-msg').textContent = message;
+                const inp = ov.querySelector('.app-dialog-input');
+                if (inp) inp.value = input;
+                const done = r => { ov.remove(); resolve(r); };
+                ov.addEventListener('click', e => {
+                    const r = e.target.dataset ? e.target.dataset.r : undefined;
+                    if (r === '1') done(true);
+                    else if (r === '0' || e.target === ov) done(false);
+                });
+                document.body.appendChild(ov);
+                if (inp) { inp.focus(); inp.select(); }
+            });
+        }
+        const appConfirm = (message, okText, cancelText) => _appDialog({ message, okText: okText || 'Ya', cancelText: cancelText || 'Batal' });
+
+        function _openSeasonSheet(sel) {
+            if (document.getElementById('seasonSheet')) return;
+            const ov = document.createElement('div');
+            ov.id = 'seasonSheet';
+            ov.className = 'app-ov app-sheet-ov';
+            ov.innerHTML = `<div class="app-sheet"><div class="app-sheet-title">Pilih Season</div>${
+                [...sel.options].map(o => `<div class="app-sheet-row ${o.value === sel.value ? 'on' : ''}" data-v="${o.value}"><span>${o.text}</span><span class="app-radio ${o.value === sel.value ? 'on' : ''}"></span></div>`).join('')
+            }</div>`;
+            ov.addEventListener('click', e => {
+                const row = e.target.closest ? e.target.closest('.app-sheet-row') : null;
+                if (row) {
+                    if (sel.value !== row.dataset.v) { sel.value = row.dataset.v; sel.dispatchEvent(new Event('change')); }
+                    _closeSheet(ov);
+                } else if (e.target === ov) _closeSheet(ov);
+            });
+            document.body.appendChild(ov);
+            history.pushState({ view: 'sheet' }, '');
+            const on = ov.querySelector('.app-sheet-row.on');
+            if (on) on.scrollIntoView({ block: 'center' });
+        }
+        // Season select asli tetap dipakai logika episode; tap di areanya membuka pilihan kustom
+        document.addEventListener('click', e => {
+            const sel = document.getElementById('seasonSel');
+            if (!sel || !sel.offsetParent) return;
+            const r = sel.getBoundingClientRect();
+            if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+                e.preventDefault();
+                _openSeasonSheet(sel);
+            }
+        }, true);
+
         // ===== PENGHARGAAN & FESTIVAL (Wikidata) =====
         const AWARD_CEREMONIES = [
             { k: 'oscar',  label: 'Oscar',        q: 'Academy Award for Best Picture' },
@@ -11466,6 +11615,7 @@
         function _creditsShell(title, sub) {
             const m = document.getElementById('creditsModal');
             if (!m) return false;
+            _pauseFilmTrailer();
             m.style.display = 'block';
             m.scrollTop = 0;
             document.getElementById('creditsTitle').textContent = title;
@@ -11475,9 +11625,10 @@
             history.pushState({ view: 'credits' }, '');
             return true;
         }
-        function closeCreditsModal() {
+        function closeCreditsModal(resume) {
             const m = document.getElementById('creditsModal');
             if (m) m.style.display = 'none';
+            if (resume) _resumeFilmTrailer();
         }
         function _creditsPrep(list, type) {
             const seen = new Set();
