@@ -2153,6 +2153,35 @@
         .rv-card .recently-del { top: 8px; right: 8px; }
         .aw-catbtn { align-items: center; gap: 10px; margin-top: 12px; height: 42px; padding: 0 14px; border-radius: 10px; background: #111; border: 1px solid #2a2a2a; font-size: 13px; color: #fff; cursor: pointer; -webkit-tap-highlight-color: transparent; }
         .aw-catbtn:active { background: #181818; }
+
+        /* ===== RONDE 15: hero pemeran, latar blur Reels, samakan Terakhir Dilihat ===== */
+        .actor-hero { position: relative; padding-top: 22px; overflow: hidden; background: #000; }
+        .actor-hero .actor-cover-blur { display: block; position: absolute; inset: 0; background-size: cover; background-position: center 25%; filter: brightness(0.6); }
+        .actor-hero .actor-cover-blur.is-portrait { filter: blur(18px) brightness(0.5); transform: scale(1.2); }
+        .actor-hero .actor-cover-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.35) 45%, #000 100%); }
+        .actor-hero .actor-profile-row { margin-top: 0; }
+        .actor-hero .actor-stats-bar, .actor-hero .actor-bio-block { position: relative; z-index: 10; }
+        .actor-hero .actor-stats-bar { border-bottom: none; }
+        .actor-hero .actor-bio-block { padding-bottom: 14px; }
+        .reel-slide { isolation: isolate; }
+        .reel-bg { position: absolute; inset: -30px; z-index: -1; background-size: cover; background-position: center; filter: blur(30px) brightness(0.45) saturate(1.2); pointer-events: none; }
+        .reel-btn-watch, .reel-btn-detail { background: rgba(255,255,255,0.1); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+        #recentlyScroll, #continueWatchingScroll { gap: 10px; padding: 2px 15px 10px; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; touch-action: pan-x; }
+        #recentlyViewedWrapper, #continueWatchingWrap { padding-left: 0; padding-right: 0; }
+
+        /* ===== RONDE 16: tombol aktif = hanya border putih (berlaku untuk semua warna aksen) ===== */
+        .genre-explore-chip.active, .decade-tab-chip.active, .mvg-sort-btn.active,
+        #filterBar .stat-item.active-stat, .ep-btn.active-pill {
+            background: rgba(255,255,255,0.05) !important; color: #fff !important; border-color: #fff !important;
+        }
+        /* Modal pemeran: bar atas (nama & titik tiga) dihapus — nama sudah ada di hero */
+        .actor-topbar { display: none; }
+        .actor-hero { padding-top: 36px; }
+        /* Movieografi: judul & nama di tengah, angka kanan atas dihapus */
+        .mvg-header { justify-content: center; text-align: center; }
+        .mvg-header .mvg-title { flex: none; text-align: center; }
+        .mvg-header .mvg-actor-name { text-align: center; }
+        #mvgCountBadge { display: none; }
     </style>
 </head>
 <body>
@@ -2865,12 +2894,10 @@
             <i class="fa-solid fa-ellipsis actor-topbar-icon"></i>
         </div>
 
-        <!-- Cover with blurred background -->
-        <div class="actor-cover">
+        <!-- Hero pemeran: satu slide (tidak berganti) — latar backdrop film terpopuler -->
+        <div class="actor-hero">
             <div class="actor-cover-blur" id="actorCoverBlur"></div>
             <div class="actor-cover-overlay"></div>
-        </div>
-
         <!-- Profile pic + name row -->
         <div class="actor-profile-row">
             <div class="actor-pic-wrapper">
@@ -2902,18 +2929,20 @@
             </div>
         </div>
 
-        <!-- Action buttons (IG style) -->
-        <div class="actor-action-row">
-            <div class="actor-btn-follow" onclick="openMovieografi(window._currentActorId)">Movieografi</div>
-            <div class="actor-btn-msg" id="actorImdbBtn" onclick="openActorImdb()">IMDb</div>
-            <div class="actor-btn-sq" onclick="openActorPhotos()" title="Foto"><i class="fa-regular fa-images"></i></div>
-        </div>
-
         <!-- Bio block -->
         <div class="actor-bio-block">
             <div class="actor-bio-name" id="actorNameBio"></div>
             <div class="actor-bio-text" id="actorBiography"></div>
             <div class="actor-bio-meta" id="actorBioMeta"></div>
+        </div>
+
+        </div>
+
+        <!-- Action buttons (IG style) -->
+        <div class="actor-action-row">
+            <div class="actor-btn-follow" onclick="openMovieografi(window._currentActorId)">Movieografi</div>
+            <div class="actor-btn-msg" id="actorImdbBtn" onclick="openActorImdb()">IMDb</div>
+            <div class="actor-btn-sq" onclick="openActorPhotos()" title="Foto"><i class="fa-regular fa-images"></i></div>
         </div>
 
         <!-- Terkenal Lewat highlights strip -->
@@ -7188,6 +7217,7 @@
                 const imgPath = details.profile_path ? `https://image.tmdb.org/t/p/w500${details.profile_path}` : 'amnesfubbia.png';
                 document.getElementById('actorPic').src = imgPath;
                 document.getElementById('actorCoverBlur').style.backgroundImage = `url('${imgPath}')`;
+                document.getElementById('actorCoverBlur').classList.add('is-portrait'); // cadangan: foto diburamkan
 
                 // Nama aktor — gunakan Latin dari also_known_as jika nama asli non-Latin
                 let actorDisplayName = details.name;
@@ -7210,6 +7240,13 @@
 
                 // Stats
                 const allCast = credits.cast || [];
+                // Latar hero: backdrop dari karya paling populer (bila ada)
+                const _bd = allCast.filter(c => c.backdrop_path).sort((x, y) => (y.popularity || 0) - (x.popularity || 0))[0];
+                if (_bd) {
+                    const _el = document.getElementById('actorCoverBlur');
+                    _el.classList.remove('is-portrait');
+                    _el.style.backgroundImage = `url('https://image.tmdb.org/t/p/w780${_bd.backdrop_path}')`;
+                }
                 const movieCount = allCast.filter(c => c.media_type === 'movie').length;
                 const tvCount = allCast.filter(c => c.media_type === 'tv').length;
                 document.getElementById('statWorks').innerText = allCast.length;
@@ -7666,6 +7703,7 @@
                     const synTransId = `reel-trans-${reel.movieId}`;
 
                     slide.innerHTML = `
+                        ${reel.poster ? `<div class="reel-bg" style="background-image:url('https://image.tmdb.org/t/p/w342${reel.poster}')"></div>` : ''}
                         <div class="reel-header-text">
                             <div class="reel-title">${reel.title}</div>
                             <div class="reel-meta-inline">
@@ -12371,6 +12409,15 @@
             if (wrap) wrap.style.display = 'none';
             showToast('Lanjut Tonton dibersihkan');
         }
+        // Hapus satu entri Lanjut Tonton
+        function deleteResumeOne(id) {
+            try {
+                const rd = getResumeData();
+                delete rd[id];
+                localStorage.setItem(RESUME_KEY, JSON.stringify(rd));
+            } catch (e) { _warn('deleteResumeOne', e); }
+            renderContinueWatching();
+        }
         // Ambil judul latin (huruf alfabet) — non-Latin diterjemahkan ke judul EN bila ada
         async function _latinTitle(type, id, current) {
             if (!isNonLatin(current || '')) return current || 'Judul';
@@ -12437,6 +12484,7 @@
                     <div style="position:absolute;top:8px;left:10px;font-size:8px;font-weight:800;letter-spacing:0.5px;color:#fff;background:rgba(0,0,0,0.55);padding:3px 8px;border-radius:8px;text-transform:uppercase">${c.label}</div>
                     <div style="position:absolute;left:10px;right:44px;bottom:12px;font-size:12px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.d.title}</div>
                     <div style="position:absolute;right:12px;bottom:10px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.92);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.5)"><i class="fa-solid fa-play" style="color:#111;font-size:11px;margin-left:1px"></i></div>
+                    <div class="recently-del" style="top:8px;right:8px" onclick="event.stopPropagation(); deleteResumeOne('${c.id}')"><i class="fa-solid fa-xmark"></i></div>
                     <div style="position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,0.2)"><div style="height:100%;width:${c.pct}%;background:var(--accent,#1a73e8)"></div></div>
                 </div>`;
             }).join('');
