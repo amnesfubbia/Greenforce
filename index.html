@@ -2216,6 +2216,25 @@
         .about-app-tagline { margin-bottom: 10px; }
         /* Pencarian & kalender: tab/tanggal menempel tepat di bawah header sesungguhnya */
         #searchTypeTabs, #calendarHeader, #searchEmptyState > div[style*="position:sticky"] { top: var(--sh, 54px) !important; }
+
+        /* ===== RONDE 20 ===== */
+        /* Home: header benar-benar mentok ke atas (jarak status bar hanya untuk mode PWA) */
+        #mainProfile .top-bar { top: 0; height: 50px; }
+        body.pwa-mode #mainProfile .top-bar { top: var(--status-bar-height, 0px); }
+        #mainProfile .profile-header:not(.has-hero) { padding-top: 50px; }
+        /* Lanjut Tonton & Terakhir Dilihat: titik awal poster kiri sama (snap menghormati padding) */
+        #recentlyScroll, #continueWatchingScroll { scroll-padding-left: 15px; scroll-padding-right: 15px; }
+        /* Reels: tombol lebih rapat ke navigasi bawah; sisi atas video digelapkan & diburamkan menutupi tulisan YouTube */
+        .reel-action-buttons { padding: 8px 15px 6px; }
+        .reel-slide::before { height: 140px; background: linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.92) 38%, rgba(0,0,0,0.6) 72%, rgba(0,0,0,0) 100%); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 100%); mask-image: linear-gradient(to bottom, #000 70%, transparent 100%); }
+        .reel-video-wrap { -webkit-mask-image: linear-gradient(to bottom, #000 68%, transparent 100%); mask-image: linear-gradient(to bottom, #000 68%, transparent 100%); }
+        .reel-video-wrap.streaming { -webkit-mask-image: none; mask-image: none; }
+        .reel-slide::after { height: 48%; }
+
+        /* ===== RONDE 21 ===== */
+        /* Reels: tutupan hitam di atas video dipertipis; tombol rapat ke navigasi bawah */
+        .reel-slide::before { height: 88px; background: linear-gradient(to bottom, #000 0%, #000 34px, rgba(0,0,0,0.7) 58px, rgba(0,0,0,0) 100%); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%); mask-image: linear-gradient(to bottom, #000 72%, transparent 100%); }
+        .reel-action-buttons { padding: 8px 15px 2px; }
     </style>
 </head>
 <body>
@@ -2649,16 +2668,19 @@
         <!-- Decade modal (triggered by filter btn when idle) -->
         <div id="decadeModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);overflow-y:auto">
             <div style="max-width:520px;margin:0 auto;padding:20px 15px 60px">
-                <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:-20px -15px 12px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
+                <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:-20px -15px 0;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
                     <i class="fa-solid fa-chevron-left btn-icon bk-none" onclick="_manualClose('decade', closeDecadeModal)"></i>
                     <div style="position:absolute;left:0;right:0;padding:0 56px;text-align:center;pointer-events:none;font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff">Rating Tertinggi per Dekade</div>
                 </div>
                 <!-- Decade + type selector -->
-                <div style="display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none" class="no-scrollbar" id="decadeTabRow"></div>
-                <div style="display:flex;border-bottom:1px solid #1a1a1a;margin-bottom:12px">
-                    <div id="dcTypeMovie" class="decade-type-btn active" onclick="selectDecadeType('movie',this)">Film</div>
-                    <div id="dcTypeTV" class="decade-type-btn" onclick="selectDecadeType('tv',this)">Serial</div>
+                <div id="dcSticky" style="position:sticky;top:54px;z-index:4;background:#000;margin:0 -15px;padding:12px 15px 0">
+                    <div style="display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none" class="no-scrollbar" id="decadeTabRow"></div>
+                    <div style="display:flex;border-bottom:1px solid #1a1a1a;margin-bottom:0">
+                        <div id="dcTypeMovie" class="decade-type-btn active" onclick="selectDecadeType('movie',this)">Film</div>
+                        <div id="dcTypeTV" class="decade-type-btn" onclick="selectDecadeType('tv',this)">Serial</div>
+                    </div>
                 </div>
+                <div style="height:12px"></div>
                 <div id="decadeGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
             </div>
         </div>
@@ -3050,7 +3072,7 @@
         <div class="reels-topbar">
             <div style="display:flex;align-items:center;gap:10px;pointer-events:auto">
                 <i class="fa-solid fa-chevron-left reels-back-btn bk-none" onclick="_manualClose('reels', closeReels)" style="pointer-events:auto;font-size:20px"></i>
-                <span style="font-size:16px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:-0.3px">Reels</span>
+                <span style="font-size:22px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:-0.5px">Reels</span>
             </div>
             <div style="width:32px"></div>
         </div>
