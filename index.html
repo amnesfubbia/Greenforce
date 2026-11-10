@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>amnesfubbia</title>
     <meta name="description" content="Discover, watch & archive film dan serial favoritmu. Streaming 20+ server, trailer, Live TV Indonesia.">
     <meta name="theme-color" content="#000000">
@@ -2296,6 +2296,9 @@
         .reel-action-buttons { padding-bottom: 8px; }
         .rds-btn-row { padding-bottom: 8px; }
         #filterBar, .about-hero, .about-credits, .actor-stats-bar, .reels-topbar { padding-left: 15px; padding-right: 15px; }
+
+        /* ===== RONDE 29: zoom jari boleh, ketuk-ganda tidak zoom ===== */
+        html, body { touch-action: manipulation; }
     </style>
 </head>
 <body>
@@ -3582,6 +3585,72 @@
     </div>
 
     <script>
+
+        // ===== GAMBAR ADAPTIF & ALT OTOMATIS =====
+        // Ukuran gambar TMDb disesuaikan dengan kerapatan layar & koneksi (ditaruh di satu tempat, berlaku ke semua gambar).
+        (function () {
+            const conn = navigator.connection || {};
+            const dpr = window.devicePixelRatio || 1;
+            const lowData = !!conn.saveData || /(^|-)2g$/.test(String(conn.effectiveType || ''));
+            const wide = window.innerWidth >= 700;
+            const hi = !lowData && (dpr >= 2.5 || (wide && dpr >= 2));
+            // peta dibuat idempoten (menerapkan dua kali hasilnya sama)
+            const UP = { 92: 154, 185: 342, 300: 780, 500: 780 };
+            const DOWN = { 1280: 500, 780: 500 };
+            function adapt(str) {
+                if (typeof str !== 'string' || str.indexOf('image.tmdb.org/t/p/w') < 0) return str;
+                if (!hi && !lowData) return str;
+                return str.replace(/image\.tmdb\.org\/t\/p\/w(\d+)\//g, (m, w) => {
+                    w = parseInt(w, 10);
+                    const n = lowData ? (DOWN[w] || w) : (UP[w] || w);
+                    return 'image.tmdb.org/t/p/w' + n + '/';
+                });
+            }
+            window._tmdbAdapt = adapt;
+            const T_SEL = '.post-card-title,.card-title-text,.hero-title,.notif-title,.rv-title,.cast-name,.similar-title,.ep-title,[class*="title"],[class*="name"]';
+            function fixAlts(root) {
+                try {
+                    if (!root || !root.querySelectorAll) return;
+                    root.querySelectorAll('img:not([alt])').forEach(im => {
+                        let text = '';
+                        const holder = im.closest('[data-title],[title]');
+                        if (holder) text = holder.getAttribute('data-title') || holder.getAttribute('title') || '';
+                        let c = im.parentElement;
+                        for (let i = 0; i < 4 && c && !text; i++, c = c.parentElement) {
+                            const t = c.querySelector(T_SEL);
+                            if (t && t.textContent && t.textContent.trim()) text = t.textContent.trim().slice(0, 80);
+                        }
+                        im.setAttribute('alt', text);
+                    });
+                } catch (e) { /* abaikan */ }
+            }
+            window._fixAlts = fixAlts;
+            try {
+                const d = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+                Object.defineProperty(Element.prototype, 'innerHTML', { get: d.get, set(v) { d.set.call(this, adapt(v)); fixAlts(this); }, configurable: true });
+            } catch (e) {}
+            try {
+                const ia = Element.prototype.insertAdjacentHTML;
+                Element.prototype.insertAdjacentHTML = function (pos, html) { const r = ia.call(this, pos, adapt(html)); fixAlts(this.parentElement || this); return r; };
+            } catch (e) {}
+            try {
+                const sd = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+                Object.defineProperty(HTMLImageElement.prototype, 'src', { get: sd.get, set(v) { sd.set.call(this, adapt(v)); }, configurable: true });
+            } catch (e) {}
+            try {
+                const bd = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'backgroundImage');
+                if (bd && bd.set) Object.defineProperty(CSSStyleDeclaration.prototype, 'backgroundImage', { get: bd.get, set(v) { bd.set.call(this, adapt(v)); }, configurable: true });
+            } catch (e) {}
+            try {
+                let tm = 0;
+                const start = () => {
+                    fixAlts(document);
+                    new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(() => fixAlts(document.body), 400); }).observe(document.body, { childList: true, subtree: true });
+                };
+                if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+            } catch (e) {}
+        })();
+
         // Logging error ringan: tidak menampilkan apa pun di layar, hanya ke console (untuk debugging)
         function _warn(ctx, e) { console.warn('[amnes:' + ctx + ']', e); }
         function _dbg(ctx, e) { console.debug('[amnes:' + ctx + ']', e); }
@@ -3812,7 +3881,7 @@
         // Rekomendasi — daftar gaya "radio" (riwayat jika ada, kalau belum ada pakai top hits)
         let _musicHomeQueues = { reco: [], newrelease: [] };
         function musicRadioRowHTML(t, i, section) {
-            return `<div style="display:flex;align-items:center;gap:14px;padding:11px 20px;cursor:pointer;border-bottom:1px solid #161616" onclick="musicPlayHomeRow('${section}',${i})">
+            return `<div style="display:flex;align-items:center;gap:14px;padding:11px 15px;cursor:pointer;border-bottom:1px solid #161616" onclick="musicPlayHomeRow('${section}',${i})">
                 <img loading="lazy" decoding="async" src="${t.artworkSmall}" onerror="musicImgFallback(this)" style="width:52px;height:52px;border-radius:10px;object-fit:cover;background:#1a1a1a;flex-shrink:0">
                 <div style="flex:1;overflow:hidden">
                     <div style="display:flex;align-items:center;gap:6px">
@@ -3882,9 +3951,9 @@
                 let tracks = musicShuffleArr(raw.map(musicNormalize));
                 tracks = musicCapPerArtist(tracks, 2).slice(0, 10);
                 _musicHomeQueues.reco = tracks;
-                el.innerHTML = tracks.length ? tracks.map((t,i) => musicRecoGridCardHTML(t, i, 'reco')).join('') : '<div style="color:#444;font-size:12px;padding:10px 20px">Tidak ada data</div>';
+                el.innerHTML = tracks.length ? tracks.map((t,i) => musicRecoGridCardHTML(t, i, 'reco')).join('') : '<div style="color:#444;font-size:12px;padding:10px 15px">Tidak ada data</div>';
             } catch(e) {
-                el.innerHTML = '<div style="color:#444;font-size:12px;padding:10px 20px">Gagal memuat</div>';
+                el.innerHTML = '<div style="color:#444;font-size:12px;padding:10px 15px">Gagal memuat</div>';
             }
         }
         async function musicRenderNewReleases() {
@@ -3901,9 +3970,9 @@
                 _musicHomeQueues.newrelease = tracks;
                 el.innerHTML = tracks.length
                     ? tracks.map((t,i) => musicRadioRowHTML(t, i, 'newrelease')).join('')
-                    : '<div style="color:#444;font-size:12px;padding:10px 20px">Belum ada rilisan baru dari artis-artis ini</div>';
+                    : '<div style="color:#444;font-size:12px;padding:10px 15px">Belum ada rilisan baru dari artis-artis ini</div>';
             } catch(e) {
-                el.innerHTML = '<div style="color:#444;font-size:12px;padding:10px 20px">Gagal memuat</div>';
+                el.innerHTML = '<div style="color:#444;font-size:12px;padding:10px 15px">Gagal memuat</div>';
             }
         }
         async function musicLoadHomePlaylistCard() {
@@ -4076,10 +4145,10 @@
                 document.getElementById('musicPlDetailMeta').textContent = `${tracks.length} lagu`;
                 document.getElementById('musicPlDetailList').innerHTML = tracks.length
                     ? tracks.map((t,i) => musicListItemHTML(t,i).replace(`musicPlayFromQueue(${i})`, `musicPlayPlaylistDetailAt(${i})`)).join('')
-                    : '<div style="text-align:center;padding:40px 20px;color:#444">Lagu tidak ditemukan</div>';
+                    : '<div style="text-align:center;padding:40px 15px;color:#444">Lagu tidak ditemukan</div>';
             } catch(e) {
                 document.getElementById('musicPlDetailMeta').textContent = '';
-                document.getElementById('musicPlDetailList').innerHTML = '<div style="text-align:center;padding:40px 20px;color:#444">Gagal memuat playlist</div>';
+                document.getElementById('musicPlDetailList').innerHTML = '<div style="text-align:center;padding:40px 15px;color:#444">Gagal memuat playlist</div>';
             }
         }
         function musicClosePlaylistDetail() {
@@ -4096,7 +4165,7 @@
             musicPlayCurrentQueueItem();
         }
         function musicSkeletonListRows(n) {
-            return Array(n).fill(`<div style="display:flex;align-items:center;gap:12px;padding:9px 16px">
+            return Array(n).fill(`<div style="display:flex;align-items:center;gap:12px;padding:9px 15px">
                 <div class="sk" style="width:46px;height:46px;border-radius:7px"></div>
                 <div style="flex:1"><div class="sk" style="width:70%;height:11px;border-radius:4px"></div><div class="sk" style="width:40%;height:9px;margin-top:6px;border-radius:4px"></div></div>
             </div>`).join('');
@@ -4120,17 +4189,17 @@
                 _musicAlbumDetail = { title, artist, tracks };
                 document.getElementById('musicAlbumMeta').textContent = `Album • ${tracks.length} lagu`;
                 document.getElementById('musicAlbumList').innerHTML = tracks.length
-                    ? tracks.map((t,i) => `<div style="display:flex;align-items:center;gap:12px;padding:9px 20px;cursor:pointer" onclick="musicPlayAlbumDetailAt(${i})">
+                    ? tracks.map((t,i) => `<div style="display:flex;align-items:center;gap:12px;padding:9px 15px;cursor:pointer" onclick="musicPlayAlbumDetailAt(${i})">
                         <span style="width:18px;font-size:12px;color:#555;text-align:center">${i+1}</span>
                         <div style="flex:1;overflow:hidden">
                             <div style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div>
                         </div>
                         <span style="font-size:11px;color:#555">${Math.floor(t.duration/60)}:${String(t.duration%60).padStart(2,'0')}</span>
                     </div>`).join('')
-                    : '<div style="text-align:center;padding:40px 20px;color:#444">Lagu tidak ditemukan</div>';
+                    : '<div style="text-align:center;padding:40px 15px;color:#444">Lagu tidak ditemukan</div>';
             } catch(e) {
                 document.getElementById('musicAlbumMeta').textContent = '';
-                document.getElementById('musicAlbumList').innerHTML = '<div style="text-align:center;padding:40px 20px;color:#444">Gagal memuat album</div>';
+                document.getElementById('musicAlbumList').innerHTML = '<div style="text-align:center;padding:40px 15px;color:#444">Gagal memuat album</div>';
             }
         }
         function musicCloseAlbumDetail() {
@@ -4200,11 +4269,11 @@
             if (!el) return;
             const recent = JSON.parse(localStorage.getItem('musicRecentSearches') || '[]');
             el.innerHTML = `
-                <div style="padding:4px 20px 24px">
+                <div style="padding:4px 15px 24px">
                     <div style="font-size:15px;font-weight:700;color:#eee;margin-bottom:14px">Teratas</div>
                     <div id="musicSearchTopArtistsScroll" style="display:flex;gap:18px;overflow-x:auto;scrollbar-width:none">${musicSkeletonCards(4, true)}</div>
                 </div>
-                <div style="padding:0 20px">
+                <div style="padding:0 15px">
                     <div style="font-size:15px;font-weight:700;color:#eee;margin-bottom:6px">Pencarian terbaru</div>
                     ${recent.length ? recent.map(q => `
                         <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #1a1a1a">
@@ -4238,7 +4307,7 @@
             document.getElementById('musicSearchInp').value = q;
             musicSaveRecentSearch(q);
             const el = document.getElementById('musicSearchResults');
-            el.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#444"><i class="fa-solid fa-compact-disc fa-spin" style="font-size:28px;color:#fff;margin-bottom:12px;display:block"></i>Mencari...</div>`;
+            el.innerHTML = `<div style="text-align:center;padding:50px 15px;color:#444"><i class="fa-solid fa-compact-disc fa-spin" style="font-size:28px;color:#fff;margin-bottom:12px;display:block"></i>Mencari...</div>`;
             try {
                 const [trackRes, artistRes] = await Promise.all([
                     fetch(`${ITUNES_API}/search?term=${encodeURIComponent(q)}&media=music&country=ID&lang=id_id&limit=30`).then(r => r.json()),
@@ -4247,15 +4316,15 @@
                 const tracks = (trackRes.results || []).filter(t => t.trackId && t.previewUrl).map(musicNormalize);
                 const artists = (artistRes.results || []).filter(a => a.artistId && a.artistName);
                 if (!tracks.length && !artists.length) {
-                    el.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#444">Tidak ada hasil untuk "${q}"</div>`;
+                    el.innerHTML = `<div style="text-align:center;padding:50px 15px;color:#444">Tidak ada hasil untuk "${q}"</div>`;
                     return;
                 }
                 _musicQueue = tracks;
                 let html = '';
                 if (artists.length) {
                     html += `<div style="padding:4px 0 10px">
-                        <div style="font-size:13px;font-weight:800;color:#888;padding:0 16px 10px">Artis</div>
-                        <div style="display:flex;gap:16px;overflow-x:auto;padding:0 16px;scrollbar-width:none">
+                        <div style="font-size:13px;font-weight:800;color:#888;padding:0 15px 10px">Artis</div>
+                        <div style="display:flex;gap:16px;overflow-x:auto;padding:0 15px;scrollbar-width:none">
                             ${artists.map(a => `
                                 <div onclick="musicOpenArtistProfile(${a.artistId},'${(a.artistName||'').replace(/'/g,"&#39;")}')" style="flex-shrink:0;width:78px;text-align:center;cursor:pointer">
                                     <div class="music-avatar-ring" style="width:78px;height:78px;margin-bottom:6px">
@@ -4269,13 +4338,13 @@
                     </div>`;
                 }
                 if (tracks.length) {
-                    html += `<div style="font-size:13px;font-weight:800;color:#888;padding:14px 16px 4px">Lagu</div>`;
+                    html += `<div style="font-size:13px;font-weight:800;color:#888;padding:14px 15px 4px">Lagu</div>`;
                     html += tracks.map((t, i) => musicListItemHTML(t, i)).join('');
                 }
                 el.innerHTML = html;
                 if (artists.length) musicHydrateArtistArt(artists, 'searchres');
             } catch(e) {
-                el.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#444">Gagal memuat hasil</div>`;
+                el.innerHTML = `<div style="text-align:center;padding:50px 15px;color:#444">Gagal memuat hasil</div>`;
             }
         }
 
@@ -4339,7 +4408,7 @@
         function musicListItemHTML(t, idx) {
             const isLiked = musicIsLiked(t.id);
             const isPlaying = _musicCurrentTrack && _musicCurrentTrack.id === t.id;
-            return `<div style="display:flex;align-items:center;gap:12px;padding:9px 16px;cursor:pointer;${isPlaying?'background:#111':''}"
+            return `<div style="display:flex;align-items:center;gap:12px;padding:9px 15px;cursor:pointer;${isPlaying?'background:#111':''}"
                 onclick="musicPlayFromQueue(${idx})">
                 <img loading="lazy" decoding="async" src="${t.artworkSmall}" onerror="musicImgFallback(this)" style="width:46px;height:46px;border-radius:7px;object-fit:cover;flex-shrink:0;background:#1a1a1a">
                 <div style="flex:1;overflow:hidden">
@@ -5823,7 +5892,7 @@
                     return favs.includes(key) && ch.name.toLowerCase().includes(q);
                 });
                 if (!favChannels.length) {
-                    cont.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#444"><i class="fa-regular fa-heart" style="font-size:32px;margin-bottom:12px;display:block"></i>Belum ada channel favorit<br><span style="font-size:11px">Tap ikon hati pada channel untuk menyimpannya di sini</span></div>`;
+                    cont.innerHTML = `<div style="text-align:center;padding:60px 15px;color:#444"><i class="fa-regular fa-heart" style="font-size:32px;margin-bottom:12px;display:block"></i>Belum ada channel favorit<br><span style="font-size:11px">Tap ikon hati pada channel untuk menyimpannya di sini</span></div>`;
                     return;
                 }
                 cont.innerHTML = `<div class="tv-category-label">Favorit</div><div class="tv-channel-grid">` +
@@ -5835,7 +5904,7 @@
                 const list = _iptvChannelsCache || [];
                 if (!list.length) {
                     cont.innerHTML = _iptvLoading
-                        ? '<div style="text-align:center;padding:60px 20px;color:#555"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;margin-bottom:10px;display:block"></i>Memuat channel IPTV...</div>'
+                        ? '<div style="text-align:center;padding:60px 15px;color:#555"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;margin-bottom:10px;display:block"></i>Memuat channel IPTV...</div>'
                         : '<div class="text-center py-10 text-zinc-600 text-xs">Channel tidak ditemukan.</div>';
                     return;
                 }
