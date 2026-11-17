@@ -2299,6 +2299,12 @@
 
         /* ===== RONDE 29: zoom jari boleh, ketuk-ganda tidak zoom ===== */
         html, body { touch-action: manipulation; }
+
+        /* ===== RONDE 35: keseragaman tombol (dua tingkat) =====
+           Tombol aksi kecil: tinggi 32px, radius 10px, huruf 10px tebal. Tombol aksi utama (Tonton/Download/Detail, Tonton/Unduh): tinggi 36px, radius 10px, huruf 11px tebal. */
+        .server-btn, .dl-link-btn, .ep-action-btn, .ep-page-btn, .pill, #filterBar .stat-item.pill, .mvg-sort-btn { border-radius: 10px; }
+        .server-btn, .dl-link-btn, #movieModal .server-btn, #movieModal .dl-link-btn { font-size: 10px; }
+        .reel-btn-watch, .reel-btn-detail, .rds-btn-watch, .rds-btn-info { height: 36px; padding: 0 8px; border-radius: 10px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 6px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -3344,6 +3350,19 @@
             <div id="musicPlaylistGrid" style="flex:1;overflow-y:auto;padding:6px 15px 80px;display:grid;grid-template-columns:1fr 1fr;gap:14px"></div>
         </div>
 
+        <!-- ===== LOKAL TAB (lagu dari HP) ===== -->
+        <div id="musicLocalTab" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+            <div style="padding:16px 15px 10px;flex-shrink:0;display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+                <div style="min-width:0">
+                    <div style="font-size:28px;font-weight:800;color:#fff">Lokal</div>
+                    <div id="musicLocalCount" style="font-size:12px;color:#666;margin-top:2px"></div>
+                </div>
+                <span class="music-pill" onclick="document.getElementById('musicLocalInput').click()" style="flex-shrink:0"><i class="fa-solid fa-plus" style="font-size:11px;margin-right:6px"></i>Tambah lagu</span>
+                <input id="musicLocalInput" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus,.flac" multiple style="display:none" onchange="musicLocalImport(this.files); this.value=''">
+            </div>
+            <div id="musicLocalList" style="flex:1;overflow-y:auto;padding:4px 0 80px"></div>
+        </div>
+
         <!-- ===== PROFILE TAB ===== -->
         <!-- ===== PLAYLIST DETAIL SCREEN ===== -->
         <div id="musicPlaylistDetail" style="display:none;position:absolute;top:0;left:0;right:0;bottom:62px;z-index:30;background:#000;flex-direction:column;overflow:hidden">
@@ -3832,13 +3851,14 @@
             const panelEl = document.getElementById('musicPanel');
             if (panelEl && panelEl.style.display === 'flex') panelEl.style.display = 'none';
 
-            ['home','search','playlist'].forEach(t => {
+            ['home','search','playlist','local'].forEach(t => {
                 const el = document.getElementById('music' + t.charAt(0).toUpperCase() + t.slice(1) + 'Tab');
                 if (el) el.style.display = (t === tab) ? 'flex' : 'none';
             });
             musicRenderNav(tab);
             if (tab === 'search') { setTimeout(() => document.getElementById('musicSearchInp').focus(), 100); musicRenderSearchLanding(); }
             if (tab === 'playlist') musicRenderPlaylistTab();
+            if (tab === 'local') musicRenderLocalTab();
             // pushState saat masuk tab baru (kecuali ke home, itu sudah ditangani popstate via replaceState)
             if (tab !== 'home' && !(history.state && history.state.tab === tab)) {
                 history.pushState({view:'music', tab:tab}, '');
@@ -3850,6 +3870,7 @@
             { tab:'home',     icon:'fa-solid fa-house',            label:'Home'     },
             { tab:'search',   icon:'fa-solid fa-magnifying-glass', label:'Cari'     },
             { tab:'playlist', icon:'fa-solid fa-list-ul',          label:'Playlist' },
+            { tab:'local',    icon:'fa-solid fa-folder-open',      label:'Lokal'    },
         ];
         function musicRenderNav(activeTab) {
             const el = document.getElementById('musicBottomNav');
@@ -4618,6 +4639,144 @@
         }
 
         // ---------- PLAYBACK ----------
+        // ===== MUSIK LOKAL: file dari HP disimpan di IndexedDB (tanpa upload ke mana pun) =====
+        let _lmDbP = null, _musicLocalItems = [];
+        const _lmUrls = {};
+        function _lmDb() {
+            if (_lmDbP) return _lmDbP;
+            _lmDbP = new Promise((res, rej) => {
+                const rq = indexedDB.open('amnesfubbiaLocalMusic', 1);
+                rq.onupgradeneeded = () => { const db = rq.result; db.createObjectStore('meta', { keyPath: 'id', autoIncrement: true }); db.createObjectStore('blob'); };
+                rq.onsuccess = () => res(rq.result);
+                rq.onerror = () => rej(rq.error);
+            });
+            return _lmDbP;
+        }
+        async function _lmAll() {
+            const db = await _lmDb();
+            return new Promise((res, rej) => { const rq = db.transaction('meta').objectStore('meta').getAll(); rq.onsuccess = () => res(rq.result || []); rq.onerror = () => rej(rq.error); });
+        }
+        async function _lmAdd(meta, blob) {
+            const db = await _lmDb();
+            return new Promise((res, rej) => {
+                const tx = db.transaction(['meta', 'blob'], 'readwrite');
+                const r = tx.objectStore('meta').add(meta);
+                r.onsuccess = () => tx.objectStore('blob').put(blob, r.result);
+                tx.oncomplete = () => res(r.result);
+                tx.onerror = () => rej(tx.error);
+                tx.onabort = () => rej(tx.error);
+            });
+        }
+        async function _lmDelete(id) {
+            const db = await _lmDb();
+            return new Promise((res, rej) => {
+                const tx = db.transaction(['meta', 'blob'], 'readwrite');
+                tx.objectStore('meta').delete(id); tx.objectStore('blob').delete(id);
+                tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error);
+            });
+        }
+        async function _lmBlobUrl(id) {
+            if (_lmUrls[id]) return _lmUrls[id];
+            const db = await _lmDb();
+            const blob = await new Promise((res, rej) => { const rq = db.transaction('blob').objectStore('blob').get(id); rq.onsuccess = () => res(rq.result); rq.onerror = () => rej(rq.error); });
+            if (!blob) return '';
+            return (_lmUrls[id] = URL.createObjectURL(blob));
+        }
+        function _lmDuration(file) {
+            return new Promise(res => {
+                try {
+                    const a = new Audio(), u = URL.createObjectURL(file);
+                    const done = d => { URL.revokeObjectURL(u); res(d); };
+                    a.preload = 'metadata';
+                    a.onloadedmetadata = () => done(Math.round(a.duration) || 0);
+                    a.onerror = () => done(0);
+                    a.src = u;
+                } catch (e) { res(0); }
+            });
+        }
+        // Sampul bawaan (huruf pertama judul di atas warna sesuai judul) — tidak butuh gambar apa pun
+        function _lmCover(title) {
+            const t = String(title || '?').trim();
+            const ch = (t[0] || '♪').toUpperCase().replace(/[<>&"']/g, '');
+            let h = 0; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) % 360;
+            const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><rect width='300' height='300' fill='hsl(${h},35%,22%)'/><text x='150' y='195' font-size='140' font-family='sans-serif' font-weight='700' fill='rgba(255,255,255,0.85)' text-anchor='middle'>${ch}</text></svg>`;
+            return 'data:image/svg+xml,' + encodeURIComponent(svg);
+        }
+        async function musicLocalImport(fileList) {
+            const files = [...(fileList || [])].filter(f => /^audio\//.test(f.type) || /\.(mp3|m4a|aac|wav|ogg|opus|flac|wma)$/i.test(f.name));
+            if (!files.length) { showToast('Pilih file musik (MP3, M4A, WAV, dll.)'); return; }
+            let ok = 0;
+            for (const f of files) {
+                try {
+                    const base = f.name.replace(/\.[^.]+$/, '').replace(/_+/g, ' ').trim();
+                    let artist = 'Lokal', title = base;
+                    const m = base.match(/^(.+?)\s+-\s+(.+)$/);
+                    if (m) { artist = m[1].trim(); title = m[2].trim(); }
+                    const dur = await _lmDuration(f);
+                    await _lmAdd({ title, artist, duration: dur, size: f.size, added: Date.now(), name: f.name }, f);
+                    ok++;
+                } catch (e) { _warn('localImport', e); }
+            }
+            try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { _dbg('persist', e); }
+            showToast(ok ? `${ok} lagu ditambahkan` : 'Gagal menambahkan lagu (penyimpanan penuh?)');
+            musicRenderLocalTab();
+        }
+        async function musicRenderLocalTab() {
+            const list = document.getElementById('musicLocalList'), cnt = document.getElementById('musicLocalCount');
+            if (!list) return;
+            let items = [];
+            try { items = (await _lmAll()).sort((a, b) => b.added - a.added); }
+            catch (e) {
+                _warn('localAll', e);
+                list.innerHTML = '<div style="text-align:center;padding:50px 15px;color:#555;font-size:13px">Penyimpanan lokal tidak tersedia di browser ini.</div>';
+                return;
+            }
+            _musicLocalItems = items;
+            const mb = items.reduce((a, m) => a + (m.size || 0), 0) / 1048576;
+            if (cnt) cnt.textContent = items.length ? `${items.length} lagu · ${mb >= 1 ? Math.round(mb) + ' MB' : '<1 MB'}` : '';
+            if (!items.length) {
+                list.innerHTML = `<div style="text-align:center;padding:60px 30px 0;color:#555">
+                    <i class="fa-solid fa-folder-open" style="font-size:40px;color:#333"></i>
+                    <div style="font-size:14px;font-weight:700;color:#888;margin-top:14px">Belum ada lagu lokal</div>
+                    <div style="font-size:12px;line-height:1.5;margin-top:6px">Ketuk "Tambah lagu" untuk memilih file musik dari HP. Lagu disimpan di browser ini, tidak diunggah ke mana pun.</div>
+                </div>`;
+                return;
+            }
+            const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+            const ell = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+            list.innerHTML = items.map((m, i) => {
+                const d = m.duration || 0;
+                return `<div onclick="musicLocalPlay(${i})" style="display:flex;align-items:center;gap:12px;padding:9px 15px;cursor:pointer">
+                    <img src="${_lmCover(m.title)}" alt="" style="width:48px;height:48px;border-radius:8px;flex-shrink:0;background:#1a1a1a">
+                    <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700;color:#fff;${ell}">${esc(m.title)}</div>
+                        <div style="font-size:12px;color:#777;margin-top:3px;${ell}">${esc(m.artist)}${d ? ' · ' + Math.floor(d / 60) + ':' + String(d % 60).padStart(2, '0') : ''}</div></div>
+                    <i class="fa-solid fa-trash" onclick="event.stopPropagation(); musicLocalDelete(${m.id})" style="color:#666;font-size:14px;padding:8px;flex-shrink:0"></i>
+                </div>`;
+            }).join('');
+        }
+        function musicLocalPlay(i) {
+            const items = _musicLocalItems;
+            if (!items[i]) return;
+            _musicQueue = items.map(m => ({ id: 'local-' + m.id, localId: m.id, isLocal: true, title: m.title, artist: m.artist, album: 'Lokal', duration: m.duration || 0, artwork: _lmCover(m.title), artworkSmall: _lmCover(m.title), preview: '' }));
+            musicPlayFromQueue(i);
+        }
+        async function musicLocalDelete(id) {
+            const m = _musicLocalItems.find(x => x.id === id);
+            if (!m) return;
+            const ok = await appConfirm(`Hapus "${m.title}" dari Lokal?`, 'Hapus');
+            if (!ok) return;
+            try { await _lmDelete(id); } catch (e) { _warn('localDelete', e); showToast('Gagal menghapus lagu'); return; }
+            if (_lmUrls[id]) { try { URL.revokeObjectURL(_lmUrls[id]); } catch (e) {} delete _lmUrls[id]; }
+            if (_musicCurrentTrack && _musicCurrentTrack.localId === id) { _musicStopAudio(); _musicPlaying = false; try { musicUpdateAllUI(_musicCurrentTrack); } catch (e) { _dbg('localDelUI', e); } }
+            musicRenderLocalTab();
+        }
+        async function _musicPlayLocal(t) {
+            const url = await _lmBlobUrl(t.localId).catch(() => '');
+            if (!url) { showToast('File lagu tidak ditemukan di perangkat'); return; }
+            if (_musicCurrentTrack !== t) return; // sudah pindah lagu
+            t.preview = url;
+            _musicPlayPreview(t);
+        }
         function musicPlayTrack(t) {
             _musicQueue = [t];
             _musicQueueIdx = 0;
@@ -4774,7 +4933,7 @@
                 } else if (!sentInit) {
                     sentInit = true;
                     _musicYtCmd('setVolume', [parseInt(document.getElementById('musicVolumeSlider')?.value, 10) || _lsVolume]);
-                    _musicYtCmd('setPlaybackRate', [_playbackRate]);
+                    _musicYtCmd('setPlaybackRate', [1]); // musik selalu kecepatan normal (kecepatan film tidak berlaku)
                     clearInterval(iv);
                 }
                 if (tries > 40) clearInterval(iv);
@@ -4853,6 +5012,7 @@
             _musicHideYtInPlayer(); // mode preview → tampilkan poster lagi
             _musicStopAudio();
             _musicAudio = new Audio(t.preview);
+            try { _musicAudio.defaultPlaybackRate = 1; _musicAudio.playbackRate = 1; } catch (e) { _dbg('musicRate', e); }
             _musicAudio.volume = (document.getElementById('musicVolumeSlider')?.value || 100) / 100;
             _musicAudio.play().catch(e => _dbg('_musicPlayPreview', e));
             _musicPlaying = true;
@@ -4864,7 +5024,11 @@
             if (!t) return;
             _musicCurrentTrack = t;
             _musicPlaying = true;
-            if (_musicFullMode && t.title) {
+            if (t.isLocal) {
+                _musicStopAudio();
+                _musicStopYt();
+                _musicPlayLocal(t); // lagu dari HP: selalu diputar penuh dari file sendiri
+            } else if (_musicFullMode && t.title) {
                 _musicStopAudio();
                 _musicStopYt(); // hentikan video lagu sebelumnya & lepas referensi iframe lama
                 _musicPlayYt(t);
@@ -4873,7 +5037,7 @@
                 _musicPlayPreview(t);
             }
             musicUpdateAllUI(t);
-            musicAddToHistory(t);
+            if (!t.isLocal) musicAddToHistory(t);
             _musicUpdateModeChip();
         }
 
@@ -4889,7 +5053,7 @@
         }
         function _musicUpdateModeChip() {
             const chip = document.getElementById('musicModeChip');
-            if (chip) chip.innerText = _musicFullMode ? 'FULL' : '30s';
+            if (chip) chip.innerText = (_musicCurrentTrack && _musicCurrentTrack.isLocal) ? 'LOKAL' : (_musicFullMode ? 'FULL' : '30s');
         }
 
         // ===== BAGIKAN FILM / SERIAL (tautan langsung) =====
@@ -12911,8 +13075,6 @@
         function _speedApply() {
             const v = document.getElementById(`vid-${currentIdx}`);
             if (v) { try { v.contentWindow.postMessage(JSON.stringify({event:'command', func:'setPlaybackRate', args:[_playbackRate]}), '*'); } catch (e) { _dbg('_speedApply', e); } }
-            if (_musicFrameWin) { _musicYtCmd('setPlaybackRate', [_playbackRate]); }
-            if (_musicAudio) { try { _musicAudio.playbackRate = _playbackRate; } catch (e) { _dbg('_speedApply', e); } }
             const l1 = document.getElementById('speedLabel'); if (l1) l1.innerText = _playbackRate + '×';
             const l2 = document.getElementById('lsSpeedLabel'); if (l2) l2.innerText = _playbackRate + '×';
         }
